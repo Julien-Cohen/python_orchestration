@@ -1,7 +1,7 @@
 import json
 import sys
 from pathlib import Path
-from agent_task import GenerationConfig, EvaluationConfig
+from agent_task import GenerationConfig
 from pydantic import ValidationError
 
 if len(sys.argv) != 2:

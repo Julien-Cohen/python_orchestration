@@ -1,5 +1,4 @@
 import sys
-from pathlib import Path
 from pydantic import ValidationError, TypeAdapter
 
 from workflows import Step

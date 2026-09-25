@@ -1,4 +1,4 @@
-
+A datatype to specify MOSAICO workflows.
 
 # Generate the JSON schema
 
