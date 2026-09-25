@@ -19,6 +19,10 @@ class GenerationStep(BaseModel):
     type: Literal["generation-step"] = "generation-step"
     task: GenerationConfig
 
+class EvaluationStep(BaseModel):
+    type: Literal["evaluation-step"] = "evaluation-step"
+    task: EvaluationConfig
+
 
 class RetryUntilValidated(BaseModel):
     type: Literal["retry-loop"] = "retry-loop"

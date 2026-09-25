@@ -274,7 +274,7 @@
       "properties": {
         "type": {
           "const": "generation-step",
-          "default": "algorithmic-step",
+          "default": "generation-step",
           "title": "Type",
           "type": "string"
         },
