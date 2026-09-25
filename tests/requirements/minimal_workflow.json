@@ -1,0 +1,10 @@
+{
+  "type": "algorithmic-step",
+  "task": {
+    "statement": {
+      "log": "hello"
+    },
+    "readChannels": [],
+    "writeChannels" : []
+  }
+}

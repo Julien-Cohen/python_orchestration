@@ -1,0 +1,4 @@
+$schema: "../or_lang_ast/workflow_schema.yaml"
+type: reply-step
+outputChannels:
+  - "final-result"

@@ -1,0 +1,19 @@
+{
+  "config": {
+    "skill": "Check semantactically an emfatic meta model compared to a specification.",
+    "nbSpawns": 3,
+    "nbDifferentAgents": 1,
+    "nbRequiredAnswers": 2,
+    "agentTimeout": 30000,
+    "onAgentFailure": "RetryOther",
+    "onAgentRejection": "NoRetry",
+    "maxEffort": 500,
+    "maxRetry": 1
+  },
+  "consensusType": "Majority",
+  "outputKind": "Boolean",
+  "specificationChannels": ["requirements"],
+  "solutionChannels": ["meta-model"],
+  "evaluationChannel": ["semantic-correctness"],
+  "explanationChannel": ["semantic-errors"]
+}

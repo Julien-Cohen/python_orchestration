@@ -1,0 +1,437 @@
+$defs:
+  AccumulateLoop:
+    properties:
+      type:
+        const: accumulate-loop
+        default: accumulate-loop
+        title: Type
+        type: string
+      condition:
+        $ref: '#/$defs/EvaluationConfig'
+      body:
+        discriminator:
+          mapping:
+            accumulate-loop: '#/$defs/AccumulateLoop'
+            algorithmic-step: '#/$defs/AlgorithmicStep'
+            generation-step: '#/$defs/GenerationStep'
+            parallel-build: '#/$defs/ParallelBuild'
+            parallel-eval: '#/$defs/ParallelEvaluation'
+            reply-step: '#/$defs/ReplyStep'
+            retry-loop: '#/$defs/RetryUntilValidated'
+            sequence: '#/$defs/Sequence'
+          propertyName: type
+        oneOf:
+          - $ref: '#/$defs/Sequence'
+          - $ref: '#/$defs/AlgorithmicStep'
+          - $ref: '#/$defs/GenerationStep'
+          - $ref: '#/$defs/RetryUntilValidated'
+          - $ref: '#/$defs/AccumulateLoop'
+          - $ref: '#/$defs/ParallelBuild'
+          - $ref: '#/$defs/ParallelEvaluation'
+          - $ref: '#/$defs/ReplyStep'
+        title: Body
+    required:
+      - condition
+      - body
+    title: AccumulateLoop
+    type: object
+  AgentTaskConfig:
+    description: Configuration for agent tasks. Contains the information common to generation tasks and evaluation tasks.
+    properties:
+      skill:
+        title: Skill
+        type: string
+      nbSpawns:
+        title: Nbspawns
+        type: integer
+      nbDifferentAgents:
+        title: Nbdifferentagents
+        type: integer
+      nbRequiredAnswers:
+        title: Nbrequiredanswers
+        type: integer
+      agentTimeout:
+        title: Agenttimeout
+        type: integer
+      onAgentFailure:
+        $ref: '#/$defs/OnAgentFailure'
+      onAgentRejection:
+        $ref: '#/$defs/OnAgentFailure'
+      maxEffort:
+        title: Maxeffort
+        type: integer
+      maxRetry:
+        title: Maxretry
+        type: integer
+    required:
+      - skill
+      - nbSpawns
+      - nbDifferentAgents
+      - nbRequiredAnswers
+      - agentTimeout
+      - onAgentFailure
+      - onAgentRejection
+      - maxEffort
+      - maxRetry
+    title: AgentTaskConfig
+    type: object
+  AlgorithmicStep:
+    properties:
+      type:
+        const: algorithmic-step
+        default: algorithmic-step
+        title: Type
+        type: string
+      task:
+        $ref: '#/$defs/AlgorithmicTaskConfig'
+    required:
+      - task
+    title: AlgorithmicStep
+    type: object
+  AlgorithmicTaskConfig:
+    description: Specification of an algorithmic task.
+    properties:
+      statement:
+        $ref: '#/$defs/Statement'
+      readChannels:
+        items:
+          type: string
+        title: Readchannels
+        type: array
+      writeChannels:
+        items:
+          type: string
+        title: Writechannels
+        type: array
+    required:
+      - statement
+      - readChannels
+      - writeChannels
+    title: AlgorithmicTaskConfig
+    type: object
+  DecisionMode:
+    description: Specify how boolean decisions must be arbitrated.
+    enum:
+      - Majority
+      - Unanimity
+      - Debate
+    title: DecisionMode
+    type: string
+  EvaluationConfig:
+    description: Configuration for evaluation tasks.
+    properties:
+      config:
+        $ref: '#/$defs/AgentTaskConfig'
+      consensusType:
+        $ref: '#/$defs/DecisionMode'
+      outputKind:
+        $ref: '#/$defs/EvaluationKind'
+      specificationChannels:
+        items:
+          type: string
+        title: Specificationchannels
+        type: array
+      solutionChannels:
+        items:
+          type: string
+        title: Solutionchannels
+        type: array
+      evaluationChannel:
+        items:
+          type: string
+        title: Evaluationchannel
+        type: array
+      explanationChannel:
+        items:
+          type: string
+        title: Explanationchannel
+        type: array
+    required:
+      - config
+      - consensusType
+      - outputKind
+      - specificationChannels
+      - solutionChannels
+      - evaluationChannel
+      - explanationChannel
+    title: EvaluationConfig
+    type: object
+  EvaluationKind:
+    enum:
+      - Boolean
+      - Numerical
+      - Textual
+    title: EvaluationKind
+    type: string
+  GenerationConfig:
+    description: Configuration for generation tasks.
+    properties:
+      config:
+        $ref: '#/$defs/AgentTaskConfig'
+      solutionJoin:
+        $ref: '#/$defs/SolutionJoin'
+      inputChannels:
+        items:
+          type: string
+        title: Inputchannels
+        type: array
+      feedbackChannels:
+        items:
+          type: string
+        title: Feedbackchannels
+        type: array
+      outputChannel:
+        title: Outputchannel
+        type: string
+    required:
+      - config
+      - solutionJoin
+      - inputChannels
+      - feedbackChannels
+      - outputChannel
+    title: GenerationConfig
+    type: object
+  GenerationStep:
+    properties:
+      type:
+        const: generation-step
+        default: algorithmic-step
+        title: Type
+        type: string
+      task:
+        $ref: '#/$defs/GenerationConfig'
+    required:
+      - task
+    title: GenerationStep
+    type: object
+  OnAgentFailure:
+    description: Specify what to do when an agent fails.
+    enum:
+      - RetrySame
+      - RetryOther
+      - NoRetry
+    title: OnAgentFailure
+    type: string
+  ParallelBuild:
+    properties:
+      type:
+        const: parallel-build
+        default: parallel-build
+        title: Type
+        type: string
+      branches:
+        items:
+          discriminator:
+            mapping:
+              accumulate-loop: '#/$defs/AccumulateLoop'
+              algorithmic-step: '#/$defs/AlgorithmicStep'
+              generation-step: '#/$defs/GenerationStep'
+              parallel-build: '#/$defs/ParallelBuild'
+              parallel-eval: '#/$defs/ParallelEvaluation'
+              reply-step: '#/$defs/ReplyStep'
+              retry-loop: '#/$defs/RetryUntilValidated'
+              sequence: '#/$defs/Sequence'
+            propertyName: type
+          oneOf:
+            - $ref: '#/$defs/Sequence'
+            - $ref: '#/$defs/AlgorithmicStep'
+            - $ref: '#/$defs/GenerationStep'
+            - $ref: '#/$defs/RetryUntilValidated'
+            - $ref: '#/$defs/AccumulateLoop'
+            - $ref: '#/$defs/ParallelBuild'
+            - $ref: '#/$defs/ParallelEvaluation'
+            - $ref: '#/$defs/ReplyStep'
+        title: Branches
+        type: array
+      reconciliation:
+        $ref: '#/$defs/SolutionJoin'
+    required:
+      - branches
+      - reconciliation
+    title: ParallelBuild
+    type: object
+  ParallelEvaluation:
+    properties:
+      type:
+        const: parallel-eval
+        default: parallel-eval
+        title: Type
+        type: string
+      branches:
+        items:
+          discriminator:
+            mapping:
+              accumulate-loop: '#/$defs/AccumulateLoop'
+              algorithmic-step: '#/$defs/AlgorithmicStep'
+              generation-step: '#/$defs/GenerationStep'
+              parallel-build: '#/$defs/ParallelBuild'
+              parallel-eval: '#/$defs/ParallelEvaluation'
+              reply-step: '#/$defs/ReplyStep'
+              retry-loop: '#/$defs/RetryUntilValidated'
+              sequence: '#/$defs/Sequence'
+            propertyName: type
+          oneOf:
+            - $ref: '#/$defs/Sequence'
+            - $ref: '#/$defs/AlgorithmicStep'
+            - $ref: '#/$defs/GenerationStep'
+            - $ref: '#/$defs/RetryUntilValidated'
+            - $ref: '#/$defs/AccumulateLoop'
+            - $ref: '#/$defs/ParallelBuild'
+            - $ref: '#/$defs/ParallelEvaluation'
+            - $ref: '#/$defs/ReplyStep'
+        title: Branches
+        type: array
+      reconciliation:
+        $ref: '#/$defs/DecisionMode'
+    required:
+      - branches
+      - reconciliation
+    title: ParallelEvaluation
+    type: object
+  ReplyStep:
+    properties:
+      type:
+        const: reply-step
+        default: reply-step
+        title: Type
+        type: string
+      outputChannels:
+        items:
+          type: string
+        title: Outputchannels
+        type: array
+    required:
+      - outputChannels
+    title: ReplyStep
+    type: object
+  RetryUntilValidated:
+    properties:
+      type:
+        const: retry-loop
+        default: retry-loop
+        title: Type
+        type: string
+      condition:
+        $ref: '#/$defs/EvaluationConfig'
+      body:
+        discriminator:
+          mapping:
+            accumulate-loop: '#/$defs/AccumulateLoop'
+            algorithmic-step: '#/$defs/AlgorithmicStep'
+            generation-step: '#/$defs/GenerationStep'
+            parallel-build: '#/$defs/ParallelBuild'
+            parallel-eval: '#/$defs/ParallelEvaluation'
+            reply-step: '#/$defs/ReplyStep'
+            retry-loop: '#/$defs/RetryUntilValidated'
+            sequence: '#/$defs/Sequence'
+          propertyName: type
+        oneOf:
+          - $ref: '#/$defs/Sequence'
+          - $ref: '#/$defs/AlgorithmicStep'
+          - $ref: '#/$defs/GenerationStep'
+          - $ref: '#/$defs/RetryUntilValidated'
+          - $ref: '#/$defs/AccumulateLoop'
+          - $ref: '#/$defs/ParallelBuild'
+          - $ref: '#/$defs/ParallelEvaluation'
+          - $ref: '#/$defs/ReplyStep'
+        title: Body
+    required:
+      - condition
+      - body
+    title: RetryUntilValidated
+    type: object
+  Sequence:
+    properties:
+      type:
+        const: sequence
+        default: sequence
+        title: Type
+        type: string
+      step1:
+        discriminator:
+          mapping:
+            accumulate-loop: '#/$defs/AccumulateLoop'
+            algorithmic-step: '#/$defs/AlgorithmicStep'
+            generation-step: '#/$defs/GenerationStep'
+            parallel-build: '#/$defs/ParallelBuild'
+            parallel-eval: '#/$defs/ParallelEvaluation'
+            reply-step: '#/$defs/ReplyStep'
+            retry-loop: '#/$defs/RetryUntilValidated'
+            sequence: '#/$defs/Sequence'
+          propertyName: type
+        oneOf:
+          - $ref: '#/$defs/Sequence'
+          - $ref: '#/$defs/AlgorithmicStep'
+          - $ref: '#/$defs/GenerationStep'
+          - $ref: '#/$defs/RetryUntilValidated'
+          - $ref: '#/$defs/AccumulateLoop'
+          - $ref: '#/$defs/ParallelBuild'
+          - $ref: '#/$defs/ParallelEvaluation'
+          - $ref: '#/$defs/ReplyStep'
+        title: Step1
+      step2:
+        discriminator:
+          mapping:
+            accumulate-loop: '#/$defs/AccumulateLoop'
+            algorithmic-step: '#/$defs/AlgorithmicStep'
+            generation-step: '#/$defs/GenerationStep'
+            parallel-build: '#/$defs/ParallelBuild'
+            parallel-eval: '#/$defs/ParallelEvaluation'
+            reply-step: '#/$defs/ReplyStep'
+            retry-loop: '#/$defs/RetryUntilValidated'
+            sequence: '#/$defs/Sequence'
+          propertyName: type
+        oneOf:
+          - $ref: '#/$defs/Sequence'
+          - $ref: '#/$defs/AlgorithmicStep'
+          - $ref: '#/$defs/GenerationStep'
+          - $ref: '#/$defs/RetryUntilValidated'
+          - $ref: '#/$defs/AccumulateLoop'
+          - $ref: '#/$defs/ParallelBuild'
+          - $ref: '#/$defs/ParallelEvaluation'
+          - $ref: '#/$defs/ReplyStep'
+        title: Step2
+    required:
+      - step1
+      - step2
+    title: Sequence
+    type: object
+  SolutionJoin:
+    description: Specify what to do with solutions produced in parallel for a same channel.
+    enum:
+      - MultipleValue
+      - List
+      - First
+      - Arbitration
+    title: SolutionJoin
+    type: string
+  Statement:
+    description: Statements that act on data or on logs.
+    properties:
+      log:
+        title: Log
+        type: string
+    required:
+      - log
+    title: Statement
+    type: object
+discriminator:
+  mapping:
+    accumulate-loop: '#/$defs/AccumulateLoop'
+    algorithmic-step: '#/$defs/AlgorithmicStep'
+    generation-step: '#/$defs/GenerationStep'
+    parallel-build: '#/$defs/ParallelBuild'
+    parallel-eval: '#/$defs/ParallelEvaluation'
+    reply-step: '#/$defs/ReplyStep'
+    retry-loop: '#/$defs/RetryUntilValidated'
+    sequence: '#/$defs/Sequence'
+  propertyName: type
+oneOf:
+  - $ref: '#/$defs/Sequence'
+  - $ref: '#/$defs/AlgorithmicStep'
+  - $ref: '#/$defs/GenerationStep'
+  - $ref: '#/$defs/RetryUntilValidated'
+  - $ref: '#/$defs/AccumulateLoop'
+  - $ref: '#/$defs/ParallelBuild'
+  - $ref: '#/$defs/ParallelEvaluation'
+  - $ref: '#/$defs/ReplyStep'

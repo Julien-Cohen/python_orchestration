@@ -1,0 +1,17 @@
+{
+  "config": {
+    "skill": "Generate Emfatic meta models from natural language specification.",
+    "nbSpawns": 1,
+    "nbDifferentAgents": 1,
+    "nbRequiredAnswers": 1,
+    "agentTimeout": 30000,
+    "onAgentFailure": "RetryOther",
+    "onAgentRejection": "NoRetry",
+    "maxEffort": 1000,
+    "maxRetry": 2
+  },
+  "solutionJoin": "First",
+  "inputChannels": ["specification"],
+  "feedbackChannels": ["syntactic-feedback", "semantic-feedback"],
+  "outputChannel": "meta-model"
+}

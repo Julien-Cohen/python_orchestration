@@ -1,0 +1,80 @@
+$schema: ../../or_lang_ast/workflow_schema.json
+type: sequence
+step1:
+  type: algorithmic-step
+  task:
+    statement:
+      log: Hello.
+    readChannels: []
+    writeChannels: []
+step2:
+  type: sequence
+  step1:
+    type: retry-loop
+    body:
+      type: retry-loop
+      body:
+        type: generation-step
+        task:
+          config:
+            skill: Generate Emfatic meta models from natural language specification.
+            nbSpawns: 1
+            nbDifferentAgents: 1
+            nbRequiredAnswers: 1
+            agentTimeout: 30000
+            onAgentFailure: RetryOther
+            onAgentRejection: NoRetry
+            maxEffort: 1000
+            maxRetry: 2
+          solutionJoin: First
+          inputChannels:
+          - specification
+          feedbackChannels:
+          - syntactic-feedback
+          - semantic-feedback
+          outputChannel: meta-model
+      condition:
+        config:
+          skill: Check syntactically an emfatic meta model.
+          nbSpawns: 1
+          nbDifferentAgents: 1
+          nbRequiredAnswers: 1
+          agentTimeout: 30000
+          onAgentFailure: RetryOther
+          onAgentRejection: NoRetry
+          maxEffort: 500
+          maxRetry: 1
+        consensusType: Majority
+        outputKind: Boolean
+        specificationChannels: []
+        solutionChannels:
+        - meta-model
+        evaluationChannel:
+        - syntactic-correctness
+        explanationChannel:
+        - syntactic-errors
+    condition:
+      config:
+        skill: Check semantically an emfatic meta model compared to a specification.
+        nbSpawns: 3
+        nbDifferentAgents: 1
+        nbRequiredAnswers: 2
+        agentTimeout: 30000
+        onAgentFailure: RetryOther
+        onAgentRejection: NoRetry
+        maxEffort: 500
+        maxRetry: 1
+      consensusType: Majority
+      outputKind: Boolean
+      specificationChannels:
+      - requirements
+      solutionChannels:
+      - meta-model
+      evaluationChannel:
+      - semantic-correctness
+      explanationChannel:
+      - semantic-errors
+  step2:
+    type: reply-step
+    outputChannels:
+    - meta-model

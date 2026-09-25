@@ -1,0 +1,19 @@
+{
+  "config": {
+    "skill": "Check that an atomic requirement is not already covered by a list of requirements.",
+    "nbSpawns": 1,
+    "nbDifferentAgents": 1,
+    "nbRequiredAnswers": 1,
+    "agentTimeout": 30000,
+    "onAgentFailure": "RetryOther",
+    "onAgentRejection": "NoRetry",
+    "maxEffort": 500,
+    "maxRetry": 1
+  },
+  "consensusType": "Majority",
+  "outputKind": "Boolean",
+  "specificationChannels": ["specification", "requirements"],
+  "solutionChannels": ["atomic-requirement"],
+  "evaluationChannel": ["non-redundancy"],
+  "explanationChannel": ["non-redundancy-explanation"]
+}
