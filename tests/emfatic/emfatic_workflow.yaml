@@ -1,23 +1,20 @@
 $schema: ../../or_lang_ast/workflow_schema.yaml
-type: sequence
-step1:
-  type: algorithmic-step
-  task:
-    statement:
-      log: Hello.
-    readChannels: []
-    writeChannels: []
-step2:
-  type: sequence
+
+
+type: retry-loop
+body:
+  type : sequence
   step1:
+    # generate a syntactically valid meta-model.
     type: retry-loop
     body:
-      type: retry-loop
-      body:
+      type: sequence
+      step1:
+        # meta-model generation
         type: generation-step
         task:
           config:
-            skill: Generate Emfatic meta models from natural language specification.
+            skill: Generate Emfatic meta-models from natural language specification.
             nbSpawns: 1
             nbDifferentAgents: 1
             nbRequiredAnswers: 1
@@ -28,32 +25,39 @@ step2:
             maxRetry: 2
           solutionJoin: First
           inputChannels:
-          - specification
+            - specification
           feedbackChannels:
-          - syntactic-feedback
-          - semantic-feedback
+            - syntactic-feedback
+            - semantic-feedback
           outputChannel: meta-model
-      condition:
-        config:
-          skill: Check syntactically an emfatic meta model.
-          nbSpawns: 1
-          nbDifferentAgents: 1
-          nbRequiredAnswers: 1
-          agentTimeout: 30000
-          onAgentFailure: RetryOther
-          onAgentRejection: NoRetry
-          maxEffort: 500
-          maxRetry: 1
-        consensusType: Majority
-        outputKind: Boolean
-        specificationChannels: []
-        solutionChannels:
-        - meta-model
-        evaluationChannel:
-        - syntactic-correctness
-        explanationChannel:
-        - syntactic-errors
-    condition:
+      step2:
+        # syntactic validation
+        type: evaluation-step
+        task:
+          config:
+            skill: Check syntactically an emfatic meta model.
+            nbSpawns: 1
+            nbDifferentAgents: 1
+            nbRequiredAnswers: 1
+            agentTimeout: 30000
+            onAgentFailure: RetryOther
+            onAgentRejection: NoRetry
+            maxEffort: 500
+            maxRetry: 1
+          consensusType: Majority
+          outputKind: Boolean
+          specificationChannels: []
+          solutionChannels:
+          - meta-model
+          evaluationChannel:
+          - syntactic-correctness
+          explanationChannel:
+          - syntactic-errors
+    acceptanceChannel: syntactic-correctness
+  step2:
+    # semantic validation
+    type : evaluation-step
+    task:
       config:
         skill: Check semantically an emfatic meta model compared to a specification.
         nbSpawns: 3
@@ -74,7 +78,4 @@ step2:
       - semantic-correctness
       explanationChannel:
       - semantic-errors
-  step2:
-    type: reply-step
-    outputChannels:
-    - meta-model
+acceptanceChannel: semantic-correctness

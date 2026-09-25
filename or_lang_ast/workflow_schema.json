@@ -8,14 +8,12 @@
           "title": "Type",
           "type": "string"
         },
-        "condition": {
-          "$ref": "#/$defs/EvaluationConfig"
-        },
         "body": {
           "discriminator": {
             "mapping": {
               "accumulate-loop": "#/$defs/AccumulateLoop",
               "algorithmic-step": "#/$defs/AlgorithmicStep",
+              "evaluation-step": "#/$defs/EvaluationStep",
               "generation-step": "#/$defs/GenerationStep",
               "parallel-build": "#/$defs/ParallelBuild",
               "parallel-eval": "#/$defs/ParallelEvaluation",
@@ -36,6 +34,9 @@
               "$ref": "#/$defs/GenerationStep"
             },
             {
+              "$ref": "#/$defs/EvaluationStep"
+            },
+            {
               "$ref": "#/$defs/RetryUntilValidated"
             },
             {
@@ -52,11 +53,15 @@
             }
           ],
           "title": "Body"
+        },
+        "stopChannel": {
+          "title": "Stopchannel",
+          "type": "string"
         }
       },
       "required": [
-        "condition",
-        "body"
+        "body",
+        "stopChannel"
       ],
       "title": "AccumulateLoop",
       "type": "object"
@@ -232,6 +237,24 @@
       "title": "EvaluationKind",
       "type": "string"
     },
+    "EvaluationStep": {
+      "properties": {
+        "type": {
+          "const": "evaluation-step",
+          "default": "evaluation-step",
+          "title": "Type",
+          "type": "string"
+        },
+        "task": {
+          "$ref": "#/$defs/EvaluationConfig"
+        }
+      },
+      "required": [
+        "task"
+      ],
+      "title": "EvaluationStep",
+      "type": "object"
+    },
     "GenerationConfig": {
       "description": "Configuration for generation tasks.",
       "properties": {
@@ -312,6 +335,7 @@
               "mapping": {
                 "accumulate-loop": "#/$defs/AccumulateLoop",
                 "algorithmic-step": "#/$defs/AlgorithmicStep",
+                "evaluation-step": "#/$defs/EvaluationStep",
                 "generation-step": "#/$defs/GenerationStep",
                 "parallel-build": "#/$defs/ParallelBuild",
                 "parallel-eval": "#/$defs/ParallelEvaluation",
@@ -330,6 +354,9 @@
               },
               {
                 "$ref": "#/$defs/GenerationStep"
+              },
+              {
+                "$ref": "#/$defs/EvaluationStep"
               },
               {
                 "$ref": "#/$defs/RetryUntilValidated"
@@ -376,6 +403,7 @@
               "mapping": {
                 "accumulate-loop": "#/$defs/AccumulateLoop",
                 "algorithmic-step": "#/$defs/AlgorithmicStep",
+                "evaluation-step": "#/$defs/EvaluationStep",
                 "generation-step": "#/$defs/GenerationStep",
                 "parallel-build": "#/$defs/ParallelBuild",
                 "parallel-eval": "#/$defs/ParallelEvaluation",
@@ -394,6 +422,9 @@
               },
               {
                 "$ref": "#/$defs/GenerationStep"
+              },
+              {
+                "$ref": "#/$defs/EvaluationStep"
               },
               {
                 "$ref": "#/$defs/RetryUntilValidated"
@@ -456,14 +487,12 @@
           "title": "Type",
           "type": "string"
         },
-        "condition": {
-          "$ref": "#/$defs/EvaluationConfig"
-        },
         "body": {
           "discriminator": {
             "mapping": {
               "accumulate-loop": "#/$defs/AccumulateLoop",
               "algorithmic-step": "#/$defs/AlgorithmicStep",
+              "evaluation-step": "#/$defs/EvaluationStep",
               "generation-step": "#/$defs/GenerationStep",
               "parallel-build": "#/$defs/ParallelBuild",
               "parallel-eval": "#/$defs/ParallelEvaluation",
@@ -482,6 +511,9 @@
             },
             {
               "$ref": "#/$defs/GenerationStep"
+            },
+            {
+              "$ref": "#/$defs/EvaluationStep"
             },
             {
               "$ref": "#/$defs/RetryUntilValidated"
@@ -500,11 +532,15 @@
             }
           ],
           "title": "Body"
+        },
+        "acceptanceChannel": {
+          "title": "Acceptancechannel",
+          "type": "string"
         }
       },
       "required": [
-        "condition",
-        "body"
+        "body",
+        "acceptanceChannel"
       ],
       "title": "RetryUntilValidated",
       "type": "object"
@@ -522,6 +558,7 @@
             "mapping": {
               "accumulate-loop": "#/$defs/AccumulateLoop",
               "algorithmic-step": "#/$defs/AlgorithmicStep",
+              "evaluation-step": "#/$defs/EvaluationStep",
               "generation-step": "#/$defs/GenerationStep",
               "parallel-build": "#/$defs/ParallelBuild",
               "parallel-eval": "#/$defs/ParallelEvaluation",
@@ -540,6 +577,9 @@
             },
             {
               "$ref": "#/$defs/GenerationStep"
+            },
+            {
+              "$ref": "#/$defs/EvaluationStep"
             },
             {
               "$ref": "#/$defs/RetryUntilValidated"
@@ -564,6 +604,7 @@
             "mapping": {
               "accumulate-loop": "#/$defs/AccumulateLoop",
               "algorithmic-step": "#/$defs/AlgorithmicStep",
+              "evaluation-step": "#/$defs/EvaluationStep",
               "generation-step": "#/$defs/GenerationStep",
               "parallel-build": "#/$defs/ParallelBuild",
               "parallel-eval": "#/$defs/ParallelEvaluation",
@@ -582,6 +623,9 @@
             },
             {
               "$ref": "#/$defs/GenerationStep"
+            },
+            {
+              "$ref": "#/$defs/EvaluationStep"
             },
             {
               "$ref": "#/$defs/RetryUntilValidated"
@@ -639,6 +683,7 @@
     "mapping": {
       "accumulate-loop": "#/$defs/AccumulateLoop",
       "algorithmic-step": "#/$defs/AlgorithmicStep",
+      "evaluation-step": "#/$defs/EvaluationStep",
       "generation-step": "#/$defs/GenerationStep",
       "parallel-build": "#/$defs/ParallelBuild",
       "parallel-eval": "#/$defs/ParallelEvaluation",
@@ -657,6 +702,9 @@
     },
     {
       "$ref": "#/$defs/GenerationStep"
+    },
+    {
+      "$ref": "#/$defs/EvaluationStep"
     },
     {
       "$ref": "#/$defs/RetryUntilValidated"

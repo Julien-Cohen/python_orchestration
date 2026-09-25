@@ -6,13 +6,12 @@ $defs:
         default: accumulate-loop
         title: Type
         type: string
-      condition:
-        $ref: '#/$defs/EvaluationConfig'
       body:
         discriminator:
           mapping:
             accumulate-loop: '#/$defs/AccumulateLoop'
             algorithmic-step: '#/$defs/AlgorithmicStep'
+            evaluation-step: '#/$defs/EvaluationStep'
             generation-step: '#/$defs/GenerationStep'
             parallel-build: '#/$defs/ParallelBuild'
             parallel-eval: '#/$defs/ParallelEvaluation'
@@ -24,15 +23,19 @@ $defs:
           - $ref: '#/$defs/Sequence'
           - $ref: '#/$defs/AlgorithmicStep'
           - $ref: '#/$defs/GenerationStep'
+          - $ref: '#/$defs/EvaluationStep'
           - $ref: '#/$defs/RetryUntilValidated'
           - $ref: '#/$defs/AccumulateLoop'
           - $ref: '#/$defs/ParallelBuild'
           - $ref: '#/$defs/ParallelEvaluation'
           - $ref: '#/$defs/ReplyStep'
         title: Body
+      stopChannel:
+        title: Stopchannel
+        type: string
     required:
-      - condition
       - body
+      - stopChannel
     title: AccumulateLoop
     type: object
   AgentTaskConfig:
@@ -163,6 +166,19 @@ $defs:
       - Textual
     title: EvaluationKind
     type: string
+  EvaluationStep:
+    properties:
+      type:
+        const: evaluation-step
+        default: evaluation-step
+        title: Type
+        type: string
+      task:
+        $ref: '#/$defs/EvaluationConfig'
+    required:
+      - task
+    title: EvaluationStep
+    type: object
   GenerationConfig:
     description: Configuration for generation tasks.
     properties:
@@ -225,6 +241,7 @@ $defs:
             mapping:
               accumulate-loop: '#/$defs/AccumulateLoop'
               algorithmic-step: '#/$defs/AlgorithmicStep'
+              evaluation-step: '#/$defs/EvaluationStep'
               generation-step: '#/$defs/GenerationStep'
               parallel-build: '#/$defs/ParallelBuild'
               parallel-eval: '#/$defs/ParallelEvaluation'
@@ -236,6 +253,7 @@ $defs:
             - $ref: '#/$defs/Sequence'
             - $ref: '#/$defs/AlgorithmicStep'
             - $ref: '#/$defs/GenerationStep'
+            - $ref: '#/$defs/EvaluationStep'
             - $ref: '#/$defs/RetryUntilValidated'
             - $ref: '#/$defs/AccumulateLoop'
             - $ref: '#/$defs/ParallelBuild'
@@ -263,6 +281,7 @@ $defs:
             mapping:
               accumulate-loop: '#/$defs/AccumulateLoop'
               algorithmic-step: '#/$defs/AlgorithmicStep'
+              evaluation-step: '#/$defs/EvaluationStep'
               generation-step: '#/$defs/GenerationStep'
               parallel-build: '#/$defs/ParallelBuild'
               parallel-eval: '#/$defs/ParallelEvaluation'
@@ -274,6 +293,7 @@ $defs:
             - $ref: '#/$defs/Sequence'
             - $ref: '#/$defs/AlgorithmicStep'
             - $ref: '#/$defs/GenerationStep'
+            - $ref: '#/$defs/EvaluationStep'
             - $ref: '#/$defs/RetryUntilValidated'
             - $ref: '#/$defs/AccumulateLoop'
             - $ref: '#/$defs/ParallelBuild'
@@ -311,13 +331,12 @@ $defs:
         default: retry-loop
         title: Type
         type: string
-      condition:
-        $ref: '#/$defs/EvaluationConfig'
       body:
         discriminator:
           mapping:
             accumulate-loop: '#/$defs/AccumulateLoop'
             algorithmic-step: '#/$defs/AlgorithmicStep'
+            evaluation-step: '#/$defs/EvaluationStep'
             generation-step: '#/$defs/GenerationStep'
             parallel-build: '#/$defs/ParallelBuild'
             parallel-eval: '#/$defs/ParallelEvaluation'
@@ -329,15 +348,19 @@ $defs:
           - $ref: '#/$defs/Sequence'
           - $ref: '#/$defs/AlgorithmicStep'
           - $ref: '#/$defs/GenerationStep'
+          - $ref: '#/$defs/EvaluationStep'
           - $ref: '#/$defs/RetryUntilValidated'
           - $ref: '#/$defs/AccumulateLoop'
           - $ref: '#/$defs/ParallelBuild'
           - $ref: '#/$defs/ParallelEvaluation'
           - $ref: '#/$defs/ReplyStep'
         title: Body
+      acceptanceChannel:
+        title: Acceptancechannel
+        type: string
     required:
-      - condition
       - body
+      - acceptanceChannel
     title: RetryUntilValidated
     type: object
   Sequence:
@@ -352,6 +375,7 @@ $defs:
           mapping:
             accumulate-loop: '#/$defs/AccumulateLoop'
             algorithmic-step: '#/$defs/AlgorithmicStep'
+            evaluation-step: '#/$defs/EvaluationStep'
             generation-step: '#/$defs/GenerationStep'
             parallel-build: '#/$defs/ParallelBuild'
             parallel-eval: '#/$defs/ParallelEvaluation'
@@ -363,6 +387,7 @@ $defs:
           - $ref: '#/$defs/Sequence'
           - $ref: '#/$defs/AlgorithmicStep'
           - $ref: '#/$defs/GenerationStep'
+          - $ref: '#/$defs/EvaluationStep'
           - $ref: '#/$defs/RetryUntilValidated'
           - $ref: '#/$defs/AccumulateLoop'
           - $ref: '#/$defs/ParallelBuild'
@@ -374,6 +399,7 @@ $defs:
           mapping:
             accumulate-loop: '#/$defs/AccumulateLoop'
             algorithmic-step: '#/$defs/AlgorithmicStep'
+            evaluation-step: '#/$defs/EvaluationStep'
             generation-step: '#/$defs/GenerationStep'
             parallel-build: '#/$defs/ParallelBuild'
             parallel-eval: '#/$defs/ParallelEvaluation'
@@ -385,6 +411,7 @@ $defs:
           - $ref: '#/$defs/Sequence'
           - $ref: '#/$defs/AlgorithmicStep'
           - $ref: '#/$defs/GenerationStep'
+          - $ref: '#/$defs/EvaluationStep'
           - $ref: '#/$defs/RetryUntilValidated'
           - $ref: '#/$defs/AccumulateLoop'
           - $ref: '#/$defs/ParallelBuild'
@@ -419,6 +446,7 @@ discriminator:
   mapping:
     accumulate-loop: '#/$defs/AccumulateLoop'
     algorithmic-step: '#/$defs/AlgorithmicStep'
+    evaluation-step: '#/$defs/EvaluationStep'
     generation-step: '#/$defs/GenerationStep'
     parallel-build: '#/$defs/ParallelBuild'
     parallel-eval: '#/$defs/ParallelEvaluation'
@@ -430,6 +458,7 @@ oneOf:
   - $ref: '#/$defs/Sequence'
   - $ref: '#/$defs/AlgorithmicStep'
   - $ref: '#/$defs/GenerationStep'
+  - $ref: '#/$defs/EvaluationStep'
   - $ref: '#/$defs/RetryUntilValidated'
   - $ref: '#/$defs/AccumulateLoop'
   - $ref: '#/$defs/ParallelBuild'

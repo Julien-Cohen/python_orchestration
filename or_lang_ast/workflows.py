@@ -26,13 +26,13 @@ class EvaluationStep(BaseModel):
 
 class RetryUntilValidated(BaseModel):
     type: Literal["retry-loop"] = "retry-loop"
-    condition: EvaluationConfig
     body: "Step"
+    acceptanceChannel: str
 
 class AccumulateLoop(BaseModel):
     type: Literal["accumulate-loop"] = "accumulate-loop"
-    condition: EvaluationConfig
     body: "Step"
+    stopChannel : str
 
 class ParallelBuild(BaseModel):
     type: Literal["parallel-build"] = "parallel-build"
@@ -49,7 +49,7 @@ class ReplyStep(BaseModel):
     outputChannels : list[str]
 
 Step = Annotated[
-    Union[Sequence, AlgorithmicStep, GenerationStep, RetryUntilValidated, AccumulateLoop, ParallelBuild, ParallelEvaluation, ReplyStep],
+    Union[Sequence, AlgorithmicStep, GenerationStep, EvaluationStep, RetryUntilValidated, AccumulateLoop, ParallelBuild, ParallelEvaluation, ReplyStep],
     Field(discriminator="type")
 ]
 

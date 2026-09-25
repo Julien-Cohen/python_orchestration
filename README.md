@@ -7,14 +7,14 @@ A datatype to specify MOSAICO workflows.
   python export_json_schema.py 
 ```
 
-# Generate the  YAML schema
+# Generate the YAML schema
 
 ## Install the "yq" command
 ```bash
     sudo snap install yq
 ```
 
-## Generate from the JSON schema
+## Generate the YAML schema from the JSON schema
 ```bash
   cd or_lang_ast
   yq -p json -oy -P workflow_schema.json > workflow_schema.yaml
@@ -26,7 +26,17 @@ A datatype to specify MOSAICO workflows.
   python read_json_workflow.py ../tests/emfatic/emfatic_workflow.json
 ```
 # Test read a YAML file
+
+## Emfatic example
+
 ```bash  
   cd or_lang_ast
   python read_yaml_workflow.py ../tests/emfatic/emfatic_workflow.yaml 
+```
+
+## Requirement generation example
+
+```bash  
+  cd or_lang_ast
+  python read_yaml_workflow.py ../tests/requirements/workflow.yaml 
 ```
