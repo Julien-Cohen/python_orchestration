@@ -16,7 +16,7 @@ class AlgorithmicStep(BaseModel):
     task: AlgorithmicTaskConfig
 
 class GenerationStep(BaseModel):
-    type: Literal["generation-step"] = "algorithmic-step"
+    type: Literal["generation-step"] = "generation-step"
     task: GenerationConfig
 
 
