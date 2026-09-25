@@ -1,4 +1,4 @@
-$schema: ../../or_lang_ast/workflow_schema.json
+$schema: ../../or_lang_ast/workflow_schema.yaml
 type: sequence
 step1:
   type: algorithmic-step
