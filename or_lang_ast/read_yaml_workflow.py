@@ -1,7 +1,7 @@
 import sys
 from pydantic import ValidationError
 
-from workflows import Workflow
+from workflows import Workflow, find_duplicate_channel_names
 import yaml
 
 
@@ -19,6 +19,9 @@ print("-- Trying to read a Workflow. --")
 
 try:
     workflow = Workflow.model_validate(raw_data)
+    duplicates = find_duplicate_channel_names(workflow)
+    if (duplicates != []):
+        raise Exception("Some channels are declared several times: " + str(duplicates))
     print("Workflow:", workflow)
 
 except ValidationError as e:
