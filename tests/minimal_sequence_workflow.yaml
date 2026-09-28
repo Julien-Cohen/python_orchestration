@@ -1,16 +1,26 @@
 $schema: "../or_lang_ast/workflow_schema.yaml"
 
 type: workflow
-internalChannels: []
-inputChannels: []
+internalChannels:
+  - type: channel-declaration
+    name: first-result
+    structure: Atom
+    init: "-"
+inputChannels:
+  - type: channel-declaration
+    name: final-result
+    structure: Atom
+    init: "-"
 outputChannels: []
 body:
   type: sequence
   step1:
+    # first do something
     type: reply-step
     outputChannels:
-      - "first-result"
+      - first-result
   step2:
+    # then do something else
     type: reply-step
     outputChannels:
       - "final-result"
