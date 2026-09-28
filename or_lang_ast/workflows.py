@@ -62,6 +62,37 @@ ParallelBuild.model_rebuild()
 ParallelEvaluation.model_rebuild()
 
 
+def check_declared_step(names: list[str], s: Step):
+    match s:
+        case Sequence():
+            check_declared_step(names, s.step1)
+            check_declared_step(names, s.step2)
+        case AlgorithmicStep():
+            check_channels(names, s.task.readChannels + s.task.writeChannels)
+        case GenerationStep():
+            check_channels(names, s.task.inputChannels + s.task.feedbackChannels + [s.task.outputChannel])
+        case EvaluationStep():
+            check_channels(names,
+                           s.task.specificationChannels + s.task.solutionChannels + s.task.evaluationChannel + s.task.explanationChannel)
+        case RetryUntilValidated():
+            check_channels(names, [s.acceptanceChannel])
+            check_declared_step(names, s.body)
+        case AccumulateLoop():
+            check_channels(names, [s.stopChannel])
+            check_declared_step(names, s.body)
+        case ParallelBuild():
+            for branch in s.branches:
+                check_declared_step(names, branch)
+        case ParallelEvaluation():
+            for branch in s.branches:
+                check_declared_step(names, branch)
+        case ReplyStep():
+            check_channels(names, s.outputChannels)
+
+def check_channels(declared: list[str], used: list[str]):
+    undeclared = [c for c in used if c not in declared]
+    if undeclared:
+        raise Exception("Some channels are not declared: " + str(undeclared))
 
 
 class ChannelDeclaration(BaseModel):
@@ -92,6 +123,7 @@ class Workflow(BaseModel):
     @model_validator(mode="after")
     def _no_duplicates(self) -> "Workflow":
         check_duplicates(self)
+        check_occurrences(self)
         return self
 
 def declared_names(workflow: Workflow) -> list[str]:
@@ -108,6 +140,9 @@ def check_duplicates(workflow: Workflow):
     if (duplicates != []):
         raise Exception("Some channels are declared several times: " + str(duplicates))
 
+def check_occurrences(workflow: Workflow):
+    declared = declared_names(workflow)
+    check_declared_step(declared, workflow.body)
 
 
 """

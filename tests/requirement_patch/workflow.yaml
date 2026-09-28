@@ -12,14 +12,22 @@ inputChannels:
     init : "input"
 internalChannels:
   - type: channel-declaration
-    name : atomic-requirement
+    name : review-correctness
     structure: Atom
-    init : "empty-string"
+    init : "false"
+  - type: channel-declaration
+    name : review
+    structure: Atom
+    init : "empty text"
+  - type: channel-declaration
+    name: expert-feedback
+    structure: Atom
+    init: "false"
 outputChannels:
   - type: channel-declaration
-    name : requirements
-    structure: List
-    init : "[]"
+    name : patch
+    structure: Atom
+    init : "empty text"
 body:
   type: sequence
   step1:

@@ -12,7 +12,7 @@ internalChannels:
     structure: Atom
     init : "false"
   - type: channel-declaration
-    name: syntactic-feedback
+    name: syntactic-errors
     structure: Atom
     init: "empty"
   - type: channel-declaration
@@ -55,7 +55,7 @@ body:
             inputChannels:
               - specification
             feedbackChannels:
-              - syntactic-feedback
+              - syntactic-errors
               - semantic-feedback
             outputChannel: meta-model
         step2:
@@ -99,7 +99,7 @@ body:
         consensusType: Majority
         outputKind: Boolean
         specificationChannels:
-        - requirements
+        - specification
         solutionChannels:
         - meta-model
         evaluationChannel:

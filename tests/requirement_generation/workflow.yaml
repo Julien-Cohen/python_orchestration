@@ -12,6 +12,43 @@ internalChannels:
     name : atomic-requirement
     structure: Atom
     init : "empty-string"
+  - type: channel-declaration
+    name: isComplete
+    structure: Atom
+    init: "false"
+  - type: channel-declaration
+    name: isCorrect
+    structure: Atom
+    init: "false"
+  - type: channel-declaration
+    name: correctness-explanation
+    structure: Atom
+    init: "empty text"
+  - type: channel-declaration
+    name: non-redundancy
+    structure: Atom
+    init: "false"
+  - type: channel-declaration
+    name: non-redundancy-explanation
+    structure: Atom
+    init: "empty text"
+  - type: channel-declaration
+    name: satisfiability
+    structure: Atom
+    init: "false"
+  - type: channel-declaration
+    name: satisfiability-explanation
+    structure: Atom
+    init: "empty text"
+  - type: channel-declaration
+    name: completeness
+    structure: Atom
+    init: "false"
+  - type: channel-declaration
+    name: completeness-explanation
+    structure: Atom
+    init: "empty text"
+
 outputChannels:
   - type: channel-declaration
     name : requirements
@@ -65,7 +102,7 @@ body:
                 "outputKind": "Boolean",
                 "specificationChannels": ["specification"],
                 "solutionChannels": ["atomic-requirement"],
-                "evaluationChannel": ["correctness"],
+                "evaluationChannel": ["isCorrect"],
                 "explanationChannel": ["correctness-explanation"]
               }
             - type : evaluation-step
@@ -109,7 +146,7 @@ body:
                 "explanationChannel": ["satisfiability-explanation"]
               }
           reconciliation: Unanimity
-      acceptanceChannel: fixme
+      acceptanceChannel: isCorrect
     step2:
       type: sequence
       step1:
