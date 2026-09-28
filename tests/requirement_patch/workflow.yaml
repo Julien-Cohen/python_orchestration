@@ -1,0 +1,75 @@
+$schema: ../../or_lang_ast/workflow_schema.yaml
+
+type: sequence
+step1:
+  # Generate a review of the current requirements.
+  type: retry-loop
+  body:
+    type: sequence
+    step1:
+      type: generation-step
+      task:
+        config:
+          skill: Review a list of requirements with respect to a specification and quality constraints.
+          nbSpawns: 1
+          nbDifferentAgents: 1
+          nbRequiredAnswers: 1
+          agentTimeout: 30000
+          onAgentFailure: RetryOther
+          onAgentRejection: NoRetry
+          maxEffort: 1000
+          maxRetry: 2
+        solutionJoin: First
+        inputChannels:
+          - specification
+          - quality-constraints
+        feedbackChannels:
+          - expert-feedback
+        outputChannel: review
+    step2:
+      # validation of the review
+      type: evaluation-step
+      task:
+        config:
+          skill: Check that a review of a list of requirements is correct.
+          nbSpawns: 1
+          nbDifferentAgents: 1
+          nbRequiredAnswers: 1
+          agentTimeout: 30000
+          onAgentFailure: RetryOther
+          onAgentRejection: NoRetry
+          maxEffort: 500
+          maxRetry: 1
+        consensusType: Majority
+        outputKind: Boolean
+        specificationChannels: [ ]
+        solutionChannels:
+          - review
+        evaluationChannel:
+          - review-correctness
+        explanationChannel:
+          - expert-feedback
+  acceptanceChannel: review-correctness
+step2:
+  # Generate a patch.
+  # Use a generation-step with 3 workers.
+  # Don't use a parallel build, which should be used for workers with different skills/tasks.
+  type: generation-step
+  task:
+    config:
+      skill: Generate a patch for a list of requirement given a problem given in a review.
+      nbSpawns: 3
+      nbDifferentAgents: 1
+      nbRequiredAnswers: 2
+      agentTimeout: 30000
+      onAgentFailure: RetryOther
+      onAgentRejection: NoRetry
+      maxEffort: 1000
+      maxRetry: 2
+    solutionJoin: Arbitration
+    inputChannels:
+      - specification
+      - quality-constraints
+      - review
+    feedbackChannels: []
+    outputChannel: patch
