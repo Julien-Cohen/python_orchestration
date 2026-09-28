@@ -1,5 +1,5 @@
 from typing import Literal, Union, Annotated
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, model_validator
 from collections import Counter
 
 from algorithmic_task import AlgorithmicTaskConfig
@@ -89,6 +89,11 @@ class Workflow(BaseModel):
 
     body: Step
 
+    @model_validator(mode="after")
+    def _no_duplicates(self) -> "Workflow":
+        check_duplicates(self)
+        return self
+
 def declared_names(workflow: Workflow) -> list[str]:
     return [decl.name for decl in (workflow.inputChannels + workflow.internalChannels + workflow.outputChannels)] # map
 
@@ -98,6 +103,10 @@ def find_duplicate_channel_names(workflow: Workflow) -> list[str]:
     counts = Counter(all_names)
     return [name for (name, n) in counts.items() if n > 1] # filter
 
+def check_duplicates(workflow: Workflow):
+    duplicates = find_duplicate_channel_names(workflow)
+    if (duplicates != []):
+        raise Exception("Some channels are declared several times: " + str(duplicates))
 
 
 

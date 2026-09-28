@@ -1,0 +1,18 @@
+$schema: "../or_lang_ast/workflow_schema.yaml"
+
+type: workflow
+internalChannels:
+  - type: channel-declaration
+    name: specification
+    structure: Atom
+    init: "input"
+inputChannels:
+  - type: channel-declaration
+    name: specification
+    structure: Atom
+    init: "input"
+outputChannels: []
+body:
+  type: reply-step
+  outputChannels:
+    - "final-result"
