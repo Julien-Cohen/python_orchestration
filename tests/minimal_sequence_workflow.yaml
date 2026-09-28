@@ -1,10 +1,16 @@
 $schema: "../or_lang_ast/workflow_schema.yaml"
-type: sequence
-step1:
-  type: reply-step
-  outputChannels:
-    - "first-result"
-step2:
-  type: reply-step
-  outputChannels:
-    - "final-result"
+
+type: workflow
+channels: []
+inputChannels: []
+outputChannels: []
+body:
+  type: sequence
+  step1:
+    type: reply-step
+    outputChannels:
+      - "first-result"
+  step2:
+    type: reply-step
+    outputChannels:
+      - "final-result"

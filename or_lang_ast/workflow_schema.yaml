@@ -112,6 +112,39 @@ $defs:
       - writeChannels
     title: AlgorithmicTaskConfig
     type: object
+  ChannelDeclaration:
+    description: |-
+      A channel contains the data that is read or written by agents.
+      The name of a channel must be unique.
+      It is initialized once at the beginning of an orchestration.
+    properties:
+      type:
+        const: channel-declaration
+        default: channel-declaration
+        title: Type
+        type: string
+      name:
+        title: Name
+        type: string
+      structure:
+        $ref: '#/$defs/ChannelStructure'
+      init:
+        title: Init
+        type: string
+    required:
+      - name
+      - structure
+      - init
+    title: ChannelDeclaration
+    type: object
+  ChannelStructure:
+    description: Specify how data is structured in a channel.
+    enum:
+      - Atom
+      - List
+      - Bag
+    title: ChannelStructure
+    type: string
   DecisionMode:
     description: Specify how boolean decisions must be arbitrated.
     enum:
@@ -442,25 +475,55 @@ $defs:
       - log
     title: Statement
     type: object
-discriminator:
-  mapping:
-    accumulate-loop: '#/$defs/AccumulateLoop'
-    algorithmic-step: '#/$defs/AlgorithmicStep'
-    evaluation-step: '#/$defs/EvaluationStep'
-    generation-step: '#/$defs/GenerationStep'
-    parallel-build: '#/$defs/ParallelBuild'
-    parallel-eval: '#/$defs/ParallelEvaluation'
-    reply-step: '#/$defs/ReplyStep'
-    retry-loop: '#/$defs/RetryUntilValidated'
-    sequence: '#/$defs/Sequence'
-  propertyName: type
-oneOf:
-  - $ref: '#/$defs/Sequence'
-  - $ref: '#/$defs/AlgorithmicStep'
-  - $ref: '#/$defs/GenerationStep'
-  - $ref: '#/$defs/EvaluationStep'
-  - $ref: '#/$defs/RetryUntilValidated'
-  - $ref: '#/$defs/AccumulateLoop'
-  - $ref: '#/$defs/ParallelBuild'
-  - $ref: '#/$defs/ParallelEvaluation'
-  - $ref: '#/$defs/ReplyStep'
+properties:
+  type:
+    const: workflow
+    default: workflow
+    title: Type
+    type: string
+  inputChannels:
+    items:
+      $ref: '#/$defs/ChannelDeclaration'
+    title: Inputchannels
+    type: array
+  internalChannels:
+    items:
+      $ref: '#/$defs/ChannelDeclaration'
+    title: Internalchannels
+    type: array
+  outputChannels:
+    items:
+      $ref: '#/$defs/ChannelDeclaration'
+    title: Outputchannels
+    type: array
+  body:
+    discriminator:
+      mapping:
+        accumulate-loop: '#/$defs/AccumulateLoop'
+        algorithmic-step: '#/$defs/AlgorithmicStep'
+        evaluation-step: '#/$defs/EvaluationStep'
+        generation-step: '#/$defs/GenerationStep'
+        parallel-build: '#/$defs/ParallelBuild'
+        parallel-eval: '#/$defs/ParallelEvaluation'
+        reply-step: '#/$defs/ReplyStep'
+        retry-loop: '#/$defs/RetryUntilValidated'
+        sequence: '#/$defs/Sequence'
+      propertyName: type
+    oneOf:
+      - $ref: '#/$defs/Sequence'
+      - $ref: '#/$defs/AlgorithmicStep'
+      - $ref: '#/$defs/GenerationStep'
+      - $ref: '#/$defs/EvaluationStep'
+      - $ref: '#/$defs/RetryUntilValidated'
+      - $ref: '#/$defs/AccumulateLoop'
+      - $ref: '#/$defs/ParallelBuild'
+      - $ref: '#/$defs/ParallelEvaluation'
+      - $ref: '#/$defs/ReplyStep'
+    title: Body
+required:
+  - inputChannels
+  - internalChannels
+  - outputChannels
+  - body
+title: Workflow
+type: object

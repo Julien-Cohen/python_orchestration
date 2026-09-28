@@ -4,6 +4,7 @@ from pydantic import BaseModel, Field
 from algorithmic_task import AlgorithmicTaskConfig
 from agent_task import EvaluationConfig, GenerationConfig
 from join import SolutionJoin, DecisionMode
+from ChannelStructure import ChannelStructure
 
 
 class Sequence(BaseModel):
@@ -58,3 +59,41 @@ RetryUntilValidated.model_rebuild()
 AccumulateLoop.model_rebuild()
 ParallelBuild.model_rebuild()
 ParallelEvaluation.model_rebuild()
+
+
+
+
+class ChannelDeclaration(BaseModel):
+    """
+    A channel contains the data that is read or written by agents.
+    The name of a channel must be unique.
+    It is initialized once at the beginning of an orchestration.
+    """
+    type: Literal["channel-declaration"] = "channel-declaration"
+    name: str
+    structure: ChannelStructure
+    init: str
+
+
+class Workflow(BaseModel):
+    type: Literal["workflow"] = "workflow"
+
+    inputChannels: list[ChannelDeclaration]
+    """Channels that are initialized a startup by input."""
+
+    internalChannels : list[ChannelDeclaration]
+
+    outputChannels: list[ChannelDeclaration]
+    """Channels that are reported to client at finish time."""
+
+    body: Step
+
+
+
+"""
+TODO: 
+
+* Check invariants : 
+    * Channel occurrences are bound.
+    * Declared channels have unique names.
+"""

@@ -1,10 +1,8 @@
-from pydantic import TypeAdapter
-
-from workflows import Step
+from workflows import Workflow
 import json
 
-adapter = TypeAdapter(Step)
-schema = adapter.json_schema()
+
+workflow_schema = Workflow.model_json_schema()
 
 with open("workflow_schema.json", "w") as f:
-    json.dump(schema, f, indent=2)
+    json.dump(workflow_schema, f, indent=2)

@@ -22,13 +22,6 @@ A datatype to specify MOSAICO workflows.
   yq -p json -oy -P workflow_schema.json > workflow_schema.yaml
 ``` 
 
-# Test read a JSON file
-
-```bash
-  cd or_lang_ast
-  python read_json_workflow.py ../tests/emfatic/emfatic_workflow.json
-```
-
 
 # Test read a YAML file
 

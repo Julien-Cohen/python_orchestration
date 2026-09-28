@@ -1,10 +1,9 @@
 import sys
-from pydantic import ValidationError, TypeAdapter
+from pydantic import ValidationError
 
-from workflows import Step
+from workflows import Workflow
 import yaml
 
-step_adapter = TypeAdapter(Step)
 
 if len(sys.argv) != 2:
     print(f"Usage: python {sys.argv[0]} <path_to_yaml_file>")
@@ -19,11 +18,11 @@ with open(sys.argv[1], "r") as f:
 print("-- Trying to read a Workflow. --")
 
 try:
-    step = step_adapter.validate_python(raw_data)
-    print("Step:", step)
+    workflow = Workflow.model_validate(raw_data)
+    print("Workflow:", workflow)
 
 except ValidationError as e:
-    print("Invalid Step file:", e)
+    print("Invalid Workflow file:", e)
 
 
 

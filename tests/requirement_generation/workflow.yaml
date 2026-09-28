@@ -1,132 +1,147 @@
 $schema: ../../or_lang_ast/workflow_schema.yaml
 
-# NB : the channel containing the list of requirements should be initialized with an empty list.
-# NB : the reply channel should be specified.
 
-type: accumulate-loop
+type: workflow
+inputChannels:
+  - type: channel-declaration
+    name : specification
+    structure: Atom
+    init : "input"
+internalChannels:
+  - type: channel-declaration
+    name : atomic-requirement
+    structure: Atom
+    init : "empty-string"
+outputChannels:
+  - type: channel-declaration
+    name : requirements
+    structure: List
+    init : "[]"
 body:
-  type: sequence
-  step1:
-    type: retry-loop
-    body:
-      type: sequence
-      step1:
-        type: generation-step
-        task:
-          {
-            "config": {
-              "skill": "Generate a new requirement given a specification and an existing list of requirements.",
-              "nbSpawns": 1,
-              "nbDifferentAgents": 1,
-              "nbRequiredAnswers": 1,
-              "agentTimeout": 30000,
-              "onAgentFailure": "RetryOther",
-              "onAgentRejection": "NoRetry",
-              "maxEffort": 1000,
-              "maxRetry": 2
-            },
-            "solutionJoin": "First",
-            "inputChannels": [ "specification" ],
-            "feedbackChannels": [ ],
-            "outputChannel": "atomic-requirement"
-          }
-      step2:
-        type: parallel-eval
-        branches:
-          - type: evaluation-step
-            task: {
-              "config": {
-                "skill": "Check the correctness of an atomic requirement with respect to a given specification.",
-                "nbSpawns": 1,
-                "nbDifferentAgents": 1,
-                "nbRequiredAnswers": 1,
-                "agentTimeout": 30000,
-                "onAgentFailure": "RetryOther",
-                "onAgentRejection": "NoRetry",
-                "maxEffort": 500,
-                "maxRetry": 1
-              },
-              "consensusType": "Majority",
-              "outputKind": "Boolean",
-              "specificationChannels": ["specification"],
-              "solutionChannels": ["atomic-requirement"],
-              "evaluationChannel": ["correctness"],
-              "explanationChannel": ["correctness-explanation"]
-            }
-          - type : evaluation-step
-            task: {
-              "config": {
-                "skill": "Check that an atomic requirement is not already covered by a list of requirements.",
-                "nbSpawns": 1,
-                "nbDifferentAgents": 1,
-                "nbRequiredAnswers": 1,
-                "agentTimeout": 30000,
-                "onAgentFailure": "RetryOther",
-                "onAgentRejection": "NoRetry",
-                "maxEffort": 500,
-                "maxRetry": 1
-              },
-              "consensusType": "Majority",
-              "outputKind": "Boolean",
-              "specificationChannels": ["specification", "requirements"],
-              "solutionChannels": ["atomic-requirement"],
-              "evaluationChannel": ["non-redundancy"],
-              "explanationChannel": ["non-redundancy-explanation"]
-            }
-          - type : evaluation-step
-            task : {
-              "config": {
-                "skill": "Check that an atomic requirement is satisfiable with respect to a list of requirements.",
-                "nbSpawns": 1,
-                "nbDifferentAgents": 1,
-                "nbRequiredAnswers": 1,
-                "agentTimeout": 30000,
-                "onAgentFailure": "RetryOther",
-                "onAgentRejection": "NoRetry",
-                "maxEffort": 500,
-                "maxRetry": 1
-              },
-              "consensusType": "Majority",
-              "outputKind": "Boolean",
-              "specificationChannels": ["requirements"],
-              "solutionChannels": ["atomic-requirement"],
-              "evaluationChannel": ["satisfiability"],
-              "explanationChannel": ["satisfiability-explanation"]
-            }
-        reconciliation: Unanimity
-    acceptanceChannel: fixme
-  step2:
+  type: accumulate-loop
+  body:
     type: sequence
     step1:
-      type: algorithmic-step
-      task:
-        statement:
-          log: do-accumulate # fixme
-        readChannels:
-          - requirements
-          - atomic-requirement
-        writeChannels:
-          - requirements
+      type: retry-loop
+      body:
+        type: sequence
+        step1:
+          type: generation-step
+          task:
+            {
+              "config": {
+                "skill": "Generate a new requirement given a specification and an existing list of requirements.",
+                "nbSpawns": 1,
+                "nbDifferentAgents": 1,
+                "nbRequiredAnswers": 1,
+                "agentTimeout": 30000,
+                "onAgentFailure": "RetryOther",
+                "onAgentRejection": "NoRetry",
+                "maxEffort": 1000,
+                "maxRetry": 2
+              },
+              "solutionJoin": "First",
+              "inputChannels": [ "specification" ],
+              "feedbackChannels": [ ],
+              "outputChannel": "atomic-requirement"
+            }
+        step2:
+          type: parallel-eval
+          branches:
+            - type: evaluation-step
+              task: {
+                "config": {
+                  "skill": "Check the correctness of an atomic requirement with respect to a given specification.",
+                  "nbSpawns": 1,
+                  "nbDifferentAgents": 1,
+                  "nbRequiredAnswers": 1,
+                  "agentTimeout": 30000,
+                  "onAgentFailure": "RetryOther",
+                  "onAgentRejection": "NoRetry",
+                  "maxEffort": 500,
+                  "maxRetry": 1
+                },
+                "consensusType": "Majority",
+                "outputKind": "Boolean",
+                "specificationChannels": ["specification"],
+                "solutionChannels": ["atomic-requirement"],
+                "evaluationChannel": ["correctness"],
+                "explanationChannel": ["correctness-explanation"]
+              }
+            - type : evaluation-step
+              task: {
+                "config": {
+                  "skill": "Check that an atomic requirement is not already covered by a list of requirements.",
+                  "nbSpawns": 1,
+                  "nbDifferentAgents": 1,
+                  "nbRequiredAnswers": 1,
+                  "agentTimeout": 30000,
+                  "onAgentFailure": "RetryOther",
+                  "onAgentRejection": "NoRetry",
+                  "maxEffort": 500,
+                  "maxRetry": 1
+                },
+                "consensusType": "Majority",
+                "outputKind": "Boolean",
+                "specificationChannels": ["specification", "requirements"],
+                "solutionChannels": ["atomic-requirement"],
+                "evaluationChannel": ["non-redundancy"],
+                "explanationChannel": ["non-redundancy-explanation"]
+              }
+            - type : evaluation-step
+              task : {
+                "config": {
+                  "skill": "Check that an atomic requirement is satisfiable with respect to a list of requirements.",
+                  "nbSpawns": 1,
+                  "nbDifferentAgents": 1,
+                  "nbRequiredAnswers": 1,
+                  "agentTimeout": 30000,
+                  "onAgentFailure": "RetryOther",
+                  "onAgentRejection": "NoRetry",
+                  "maxEffort": 500,
+                  "maxRetry": 1
+                },
+                "consensusType": "Majority",
+                "outputKind": "Boolean",
+                "specificationChannels": ["requirements"],
+                "solutionChannels": ["atomic-requirement"],
+                "evaluationChannel": ["satisfiability"],
+                "explanationChannel": ["satisfiability-explanation"]
+              }
+          reconciliation: Unanimity
+      acceptanceChannel: fixme
     step2:
-      type: evaluation-step
-      task:
-        config:
-          skill: Check the completeness of a list of atomic requirement with respect to a given specification.
-          nbSpawns: 1
-          nbDifferentAgents: 1
-          nbRequiredAnswers: 1
-          agentTimeout: 30000
-          onAgentFailure: RetryOther
-          onAgentRejection: NoRetry
-          maxEffort: 500
-          maxRetry: 1
-        consensusType: Majority
-        outputKind: Boolean
-        specificationChannels: [ specification ]
-        solutionChannels: [ requirements ]
-        evaluationChannel: [ completeness ]
-        explanationChannel: [ completeness-explanation ]
-stopChannel: isComplete
+      type: sequence
+      step1:
+        type: algorithmic-step
+        task:
+          statement:
+            log: do-accumulate # fixme
+          readChannels:
+            - requirements
+            - atomic-requirement
+          writeChannels:
+            - requirements
+      step2:
+        type: evaluation-step
+        task:
+          config:
+            skill: Check the completeness of a list of atomic requirement with respect to a given specification.
+            nbSpawns: 1
+            nbDifferentAgents: 1
+            nbRequiredAnswers: 1
+            agentTimeout: 30000
+            onAgentFailure: RetryOther
+            onAgentRejection: NoRetry
+            maxEffort: 500
+            maxRetry: 1
+          consensusType: Majority
+          outputKind: Boolean
+          specificationChannels: [ specification ]
+          solutionChannels: [ requirements ]
+          evaluationChannel: [ completeness ]
+          explanationChannel: [ completeness-explanation ]
+  stopChannel: isComplete
 
 
 
