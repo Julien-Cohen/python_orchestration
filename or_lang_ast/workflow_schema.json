@@ -205,11 +205,12 @@
       "type": "string"
     },
     "DecisionMode": {
-      "description": "Specify how boolean decisions must be arbitrated.",
+      "description": "Specify how divergent evaluations must be arbitrated.",
       "enum": [
         "Majority",
         "Unanimity",
-        "Debate"
+        "Debate",
+        "Threshold"
       ],
       "title": "DecisionMode",
       "type": "string"

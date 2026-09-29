@@ -34,7 +34,7 @@ class OnAgentFailure(str, Enum):
     """Retry with the same agent."""
 
     RETRY_OTHER = "RetryOther"
-    """Find an other agent and try with it."""
+    """Find an other agent (ask the repo) and try with it."""
 
     NO_RETRY = "NoRetry"
     """Don't retry on failure."""

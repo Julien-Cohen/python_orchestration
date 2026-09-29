@@ -20,7 +20,7 @@ class SolutionJoin(str, Enum):
 
 
 class DecisionMode(str, Enum):
-    """Specify how boolean decisions must be arbitrated."""
+    """Specify how divergent evaluations must be arbitrated."""
 
     MAJORITY = "Majority"
     """Decide on the majority of received evaluations. If several evaluations have the same greatest number of votes, returns one of them."""
@@ -30,3 +30,6 @@ class DecisionMode(str, Enum):
 
     DEBATE = "Debate"
     """Validate if all the received evaluations are validations. Otherwise organise a debate before deciding."""
+
+    THRESHOLD = "Threshold"
+    """Validate if a threshold is reached."""

@@ -1,11 +1,5 @@
 A datatype to specify MOSAICO workflows.
 
-# Generate the JSON schema
-
-```bash
-  cd or_lang_ast
-  python export_json_schema.py 
-```
 
 # Generate the YAML schema
 
@@ -16,6 +10,7 @@ A datatype to specify MOSAICO workflows.
 ```
 
 ## Generate the YAML schema from the JSON schema
+
 ```bash
   cd or_lang_ast
   python export_json_schema.py
