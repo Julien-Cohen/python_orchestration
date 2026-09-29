@@ -54,7 +54,8 @@ body:
             - quality-constraints
           feedbackChannels:
             - expert-feedback
-          outputChannel: review
+          outputChannels:
+            - review
       step2:
         # validation of the review
         type: evaluation-step
@@ -101,4 +102,5 @@ body:
         - quality-constraints
         - review
       feedbackChannels: []
-      outputChannel: patch
+      outputChannels:
+        - patch

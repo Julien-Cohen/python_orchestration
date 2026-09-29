@@ -86,7 +86,7 @@ class GenerationConfig(BaseModel):
     feedbackChannels : list[str]
     """List of channels to be read for feedback 'explanations' after first iterations (can be empty)."""
 
-    outputChannel: str
+    outputChannels: list[str]
     """Channel on which to write the generated Solutions (non empty)."""
 
 

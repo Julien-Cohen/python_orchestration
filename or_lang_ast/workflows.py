@@ -70,7 +70,7 @@ def check_declared_step(names: list[str], s: Step):
         case AlgorithmicStep():
             check_channels(names, s.task.readChannels + s.task.writeChannels)
         case GenerationStep():
-            check_channels(names, s.task.inputChannels + s.task.feedbackChannels + [s.task.outputChannel])
+            check_channels(names, s.task.inputChannels + s.task.feedbackChannels + s.task.outputChannels)
         case EvaluationStep():
             check_channels(names,
                            s.task.specificationChannels + s.task.solutionChannels + s.task.evaluationChannel + s.task.explanationChannel)

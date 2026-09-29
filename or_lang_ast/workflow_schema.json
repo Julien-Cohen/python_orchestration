@@ -318,9 +318,12 @@
           "title": "Feedbackchannels",
           "type": "array"
         },
-        "outputChannel": {
-          "title": "Outputchannel",
-          "type": "string"
+        "outputChannels": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Outputchannels",
+          "type": "array"
         }
       },
       "required": [
@@ -328,7 +331,7 @@
         "solutionJoin",
         "inputChannels",
         "feedbackChannels",
-        "outputChannel"
+        "outputChannels"
       ],
       "title": "GenerationConfig",
       "type": "object"

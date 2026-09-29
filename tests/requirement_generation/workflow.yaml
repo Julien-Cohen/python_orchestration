@@ -80,7 +80,7 @@ body:
               "solutionJoin": "First",
               "inputChannels": [ "specification" ],
               "feedbackChannels": [ ],
-              "outputChannel": "atomic-requirement"
+              "outputChannels": ["atomic-requirement"]
             }
         step2:
           type: parallel-eval

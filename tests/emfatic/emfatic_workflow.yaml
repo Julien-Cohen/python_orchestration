@@ -57,7 +57,8 @@ body:
             feedbackChannels:
               - syntactic-errors
               - semantic-feedback
-            outputChannel: meta-model
+            outputChannels:
+              - meta-model
         step2:
           # syntactic validation
           type: evaluation-step

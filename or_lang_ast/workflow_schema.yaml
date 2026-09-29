@@ -230,15 +230,17 @@ $defs:
           type: string
         title: Feedbackchannels
         type: array
-      outputChannel:
-        title: Outputchannel
-        type: string
+      outputChannels:
+        items:
+          type: string
+        title: Outputchannels
+        type: array
     required:
       - config
       - solutionJoin
       - inputChannels
       - feedbackChannels
-      - outputChannel
+      - outputChannels
     title: GenerationConfig
     type: object
   GenerationStep:
