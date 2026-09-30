@@ -44,3 +44,10 @@ A datatype to specify MOSAICO workflows.
 ```bash
     python -m orchestrator.yaml_schema.read_yaml_workflow tests/requirement_patch/req_patch_workflow.yaml 
 ```
+
+
+# Unit tests
+```bash
+python -m pip install -e ".[test]"
+python -m pytest -v
+```
