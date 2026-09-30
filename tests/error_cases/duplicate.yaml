@@ -5,12 +5,12 @@ internalChannels:
   - type: channel-declaration
     name: specification
     structure: Atom
-    init: "input"
+    init_with_value: "input"
 inputChannels:
-  - type: channel-declaration
+  - type: input-channel-declaration
     name: specification
     structure: Atom
-    init: "input"
+    init_with_part: "input"
 outputChannels: []
 body:
   type: reply-step

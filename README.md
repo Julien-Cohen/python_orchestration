@@ -31,12 +31,12 @@ A datatype to specify MOSAICO workflows.
 
 ```bash  
   cd workflow_datatype
-  python read_yaml_workflow.py ../tests/requirement_generation/workflow.yaml 
+  python read_yaml_workflow.py ../tests/requirement_generation/req_gen_workflow.yaml 
 ```
 
 ## Requirement patch example
 
 ```bash  
   cd workflow_datatype
-  python read_yaml_workflow.py ../tests/requirement_patch/workflow.yaml 
+  python read_yaml_workflow.py ../tests/requirement_patch/req_patch_workflow.yaml 
 ```

@@ -2,32 +2,36 @@ $schema: ../../or_lang_ast/workflow_schema.yaml
 
 type: workflow
 inputChannels:
-  - type: channel-declaration
+  - type: input-channel-declaration
     name : specification
     structure: Atom
-    init : "input"
-  - type: channel-declaration
+    init_with_part : "spec"
+  - type: input-channel-declaration
+    name: requirements
+    structure: Atom
+    init_with_part: "requirements"
+  - type: input-channel-declaration
     name : quality-constraints
     structure: List
-    init : "input"
+    init_with_part : "constraints"
 internalChannels:
   - type: channel-declaration
     name : review-correctness
     structure: Atom
-    init : "false"
+    init_with_value : "false"
   - type: channel-declaration
     name : review
     structure: Atom
-    init : "empty text"
+    init_with_value : "empty text"
   - type: channel-declaration
     name: expert-feedback
     structure: Atom
-    init: "false"
+    init_with_value: "false"
 outputChannels:
   - type: channel-declaration
     name : patch
     structure: Atom
-    init : "empty text"
+    init_with_value : "empty text"
 body:
   type: sequence
   step1:
@@ -51,6 +55,7 @@ body:
           solutionJoin: First
           inputChannels:
             - specification
+            - requirements
             - quality-constraints
           feedbackChannels:
             - expert-feedback

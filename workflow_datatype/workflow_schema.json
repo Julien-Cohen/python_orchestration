@@ -181,15 +181,15 @@
         "structure": {
           "$ref": "#/$defs/ChannelStructure"
         },
-        "init": {
-          "title": "Init",
+        "init_with_value": {
+          "title": "Init With Value",
           "type": "string"
         }
       },
       "required": [
         "name",
         "structure",
-        "init"
+        "init_with_value"
       ],
       "title": "ChannelDeclaration",
       "type": "object"
@@ -352,6 +352,35 @@
         "task"
       ],
       "title": "GenerationStep",
+      "type": "object"
+    },
+    "InputChannelDeclaration": {
+      "description": "An input channel is initialized with data received as input when starting the execution of a workflow.",
+      "properties": {
+        "type": {
+          "const": "input-channel-declaration",
+          "default": "input-channel-declaration",
+          "title": "Type",
+          "type": "string"
+        },
+        "name": {
+          "title": "Name",
+          "type": "string"
+        },
+        "structure": {
+          "$ref": "#/$defs/ChannelStructure"
+        },
+        "init_with_part": {
+          "title": "Init With Part",
+          "type": "string"
+        }
+      },
+      "required": [
+        "name",
+        "structure",
+        "init_with_part"
+      ],
+      "title": "InputChannelDeclaration",
       "type": "object"
     },
     "OnAgentFailure": {
@@ -731,7 +760,7 @@
     },
     "inputChannels": {
       "items": {
-        "$ref": "#/$defs/ChannelDeclaration"
+        "$ref": "#/$defs/InputChannelDeclaration"
       },
       "title": "Inputchannels",
       "type": "array"

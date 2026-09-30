@@ -2,32 +2,32 @@ $schema: ../../or_lang_ast/workflow_schema.yaml
 
 type: workflow
 inputChannels:
-  - type: channel-declaration
+  - type: input-channel-declaration
     name : specification
     structure: Atom
-    init : "input"
+    init_with_part : "spec"
 internalChannels:
   - type: channel-declaration
     name : syntactic-correctness
     structure: Atom
-    init : "false"
+    init_with_value : "false"
   - type: channel-declaration
     name: syntactic-errors
     structure: Atom
-    init: "empty"
+    init_with_value: "empty"
   - type: channel-declaration
     name : semantic-correctness
     structure: Atom
-    init : "false"
+    init_with_value : "false"
   - type: channel-declaration
     name: semantic-feedback
     structure: Atom
-    init: "empty"
+    init_with_value: "empty"
 outputChannels:
   - type: channel-declaration
     name : meta-model
     structure: Atom
-    init : "empty"
+    init_with_value : "empty"
 body:
   type: retry-loop
   body:

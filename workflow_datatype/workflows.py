@@ -5,7 +5,7 @@ from collections import Counter
 from algorithmic_task import AlgorithmicTaskConfig
 from agent_task import EvaluationConfig, GenerationConfig
 from join import SolutionJoin, DecisionMode
-from ChannelStructure import ChannelStructure
+from channelStructure import ChannelStructure
 
 
 class Sequence(BaseModel):
@@ -104,13 +104,21 @@ class ChannelDeclaration(BaseModel):
     type: Literal["channel-declaration"] = "channel-declaration"
     name: str
     structure: ChannelStructure
-    init: str
+    init_with_value: str
 
+class InputChannelDeclaration(BaseModel):
+    """
+    An input channel is initialized with data received as input when starting the execution of a workflow.
+    """
+    type: Literal["input-channel-declaration"] = "input-channel-declaration"
+    name: str
+    structure: ChannelStructure
+    init_with_part: str
 
 class Workflow(BaseModel):
     type: Literal["workflow"] = "workflow"
 
-    inputChannels: list[ChannelDeclaration]
+    inputChannels: list[InputChannelDeclaration]
     """Channels that are initialized a startup by input."""
 
     internalChannels : list[ChannelDeclaration]

@@ -3,57 +3,57 @@ $schema: ../../or_lang_ast/workflow_schema.yaml
 
 type: workflow
 inputChannels:
-  - type: channel-declaration
+  - type: input-channel-declaration
     name : specification
     structure: Atom
-    init : "input"
+    init_with_part : "spec"
 internalChannels:
   - type: channel-declaration
     name : atomic-requirement
     structure: Atom
-    init : "empty-string"
+    init_with_value : "empty-string"
   - type: channel-declaration
     name: isComplete
     structure: Atom
-    init: "false"
+    init_with_value: "false"
   - type: channel-declaration
     name: isCorrect
     structure: Atom
-    init: "false"
+    init_with_value: "false"
   - type: channel-declaration
     name: correctness-explanation
     structure: Atom
-    init: "empty text"
+    init_with_value: "empty text"
   - type: channel-declaration
     name: non-redundancy
     structure: Atom
-    init: "false"
+    init_with_value: "false"
   - type: channel-declaration
     name: non-redundancy-explanation
     structure: Atom
-    init: "empty text"
+    init_with_value: "empty text"
   - type: channel-declaration
     name: satisfiability
     structure: Atom
-    init: "false"
+    init_with_value: "false"
   - type: channel-declaration
     name: satisfiability-explanation
     structure: Atom
-    init: "empty text"
+    init_with_value: "empty text"
   - type: channel-declaration
     name: completeness
     structure: Atom
-    init: "false"
+    init_with_value: "false"
   - type: channel-declaration
     name: completeness-explanation
     structure: Atom
-    init: "empty text"
+    init_with_value: "empty text"
 
 outputChannels:
   - type: channel-declaration
     name : requirements
     structure: List
-    init : "[]"
+    init_with_value : "[]"
 body:
   type: accumulate-loop
   body:
