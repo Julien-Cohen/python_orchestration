@@ -12,7 +12,7 @@ A datatype to specify MOSAICO workflows.
 ## Generate the YAML schema from the JSON schema
 
 ```bash
-  cd or_lang_ast
+  cd workflow_datatype
   python export_json_schema.py
   yq -p json -oy -P workflow_schema.json > workflow_schema.yaml
 ``` 
@@ -23,20 +23,20 @@ A datatype to specify MOSAICO workflows.
 ## Emfatic example
 
 ```bash  
-  cd or_lang_ast
+  cd workflow_datatype
   python read_yaml_workflow.py ../tests/emfatic/emfatic_workflow.yaml 
 ```
 
 ## Requirement generation example
 
 ```bash  
-  cd or_lang_ast
+  cd workflow_datatype
   python read_yaml_workflow.py ../tests/requirement_generation/workflow.yaml 
 ```
 
 ## Requirement patch example
 
 ```bash  
-  cd or_lang_ast
+  cd workflow_datatype
   python read_yaml_workflow.py ../tests/requirement_patch/workflow.yaml 
 ```

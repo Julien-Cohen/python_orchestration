@@ -1,5 +1,5 @@
 {
-  "$schema": "../../or_lang_ast/workflow_schema.json",
+  "$schema": "../../workflow_datatype/workflow_schema.json",
   "type": "sequence",
   "step1": {
     "type": "algorithmic-step",
