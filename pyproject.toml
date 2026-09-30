@@ -2,6 +2,10 @@
 name = "mosaico-orchestrator"
 version = "2.0.1"
 requires-python = ">=3.12"
+dependencies = [
+    "pydantic>=2",
+    "PyYAML",
+]
 
 [build-system]
 requires = ["setuptools>=61"]
