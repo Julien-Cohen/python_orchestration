@@ -1,5 +1,5 @@
 {
-  "$schema": "../../workflow_datatype/workflow_schema.json",
+  "$schema": "../../src/orchestrator/yaml_schema/workflow_schema.json",
   "type": "sequence",
   "step1": {
     "type": "algorithmic-step",

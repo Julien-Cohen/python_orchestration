@@ -1,9 +1,9 @@
 import sys
 from pydantic import ValidationError
 
-from workflows import Workflow, find_duplicate_channel_names
 import yaml
 
+from orchestrator.workflow_datatype.workflows import Workflow
 
 if len(sys.argv) != 2:
     print(f"Usage: python {sys.argv[0]} <path_to_yaml_file>")

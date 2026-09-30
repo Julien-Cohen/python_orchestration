@@ -1,4 +1,4 @@
-from workflow_datatype.workflows import Workflow, ChannelDeclaration
+from src.orchestrator.workflow_datatype.workflows import Workflow, ChannelDeclaration
 
 class Store:
     """A store collects the states of channels during the orchestration of a workflow."""

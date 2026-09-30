@@ -2,10 +2,10 @@ from typing import Literal, Union, Annotated
 from pydantic import BaseModel, Field, model_validator
 from collections import Counter
 
-from algorithmic_task import AlgorithmicTaskConfig
-from agent_task import EvaluationConfig, GenerationConfig
-from join import SolutionJoin, DecisionMode
-from channelStructure import ChannelStructure
+from .algorithmic_task import AlgorithmicTaskConfig
+from .agent_task import EvaluationConfig, GenerationConfig
+from .join import SolutionJoin, DecisionMode
+from .channelStructure import ChannelStructure
 
 
 class Sequence(BaseModel):

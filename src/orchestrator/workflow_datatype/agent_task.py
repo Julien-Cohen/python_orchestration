@@ -24,7 +24,7 @@
 from pydantic import BaseModel
 from enum import Enum
 
-from join import SolutionJoin, DecisionMode
+from .join import SolutionJoin, DecisionMode
 
 
 class OnAgentFailure(str, Enum):
