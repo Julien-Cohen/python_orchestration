@@ -88,6 +88,8 @@ def check_declared_step(names: list[str], s: Step):
                 check_declared_step(names, branch)
         case ReplyStep():
             check_channels(names, s.outputChannels)
+        case _:
+            raise TypeError(f"Unsupported step type: {type(s).__name__}")
 
 def check_channels(declared: list[str], used: list[str]):
     undeclared = [c for c in used if c not in declared]
@@ -151,12 +153,3 @@ def check_duplicates(workflow: Workflow):
 def check_occurrences(workflow: Workflow):
     declared = declared_names(workflow)
     check_declared_step(declared, workflow.body)
-
-
-"""
-TODO: 
-
-* Check invariants : 
-    * Channel occurrences are bound.
-    * Declared channels have unique names.
-"""
