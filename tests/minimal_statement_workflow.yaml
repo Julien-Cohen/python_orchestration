@@ -1,0 +1,21 @@
+$schema: "../or_lang_ast/workflow_schema.yaml"
+
+type: workflow
+internalChannels:
+  - type: channel-declaration
+    name: first-result
+    structure: Atom
+    init_with_value: "true"
+inputChannels:
+  - type: input-channel-declaration
+    name: final-result
+    structure: Atom
+    init_with_part: "test"
+outputChannels: []
+body:
+  type: algorithmic-step
+  task:
+    statement:
+      log: "hello"
+    readChannels: []
+    writeChannels: []

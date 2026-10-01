@@ -1,4 +1,5 @@
-from src.orchestrator.workflow_datatype.workflows import Workflow, ChannelDeclaration
+from orchestrator.workflow_datatype.workflows import Workflow, ChannelDeclaration, InputChannelDeclaration
+
 
 class Store:
     """A store collects the states of channels during the orchestration of a workflow."""
@@ -13,7 +14,7 @@ class Store:
             self.init_channel(c)
 
     def init_channel (self, c:ChannelDeclaration):
-        self.store[c.name] = c.init
+        self.store[c.name] = c.init_with_value
 
-    def init_input_channel (self, c:ChannelDeclaration, input_values):
-        self.store[c.name] = c.init
+    def init_input_channel (self, c:InputChannelDeclaration, input_values):
+        self.store[c.name] = c.init_with_part
