@@ -6,7 +6,7 @@ inputChannels:
   - type: input-channel-declaration
     name: final-result
     structure: Atom
-    init_with_part: "test"
+    init_with_part: "no-value"
 outputChannels: []
 body:
   type: generation-step

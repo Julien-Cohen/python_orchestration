@@ -1,3 +1,7 @@
+import asyncio
+from multiprocessing import Manager, Process
+
+from orchestrator.orchestration.a2a_client import connect_and_send
 from orchestrator.orchestration.agent_repository import AgentRepository
 from orchestrator.workflow_datatype.agent_task import GenerationConfig
 from orchestrator.workflow_datatype.algorithmic_task import AlgorithmicTaskConfig
@@ -7,6 +11,11 @@ from orchestrator.workflow_datatype.workflows import Workflow, Step, Sequence, A
 
 repo = AgentRepository()
 
+
+def _run_connect_and_send(url, skill, accu):
+    asyncio.run(connect_and_send(url, skill, accu))
+
+
 def run_algorithmic_task(task : AlgorithmicTaskConfig, store:Store):
     print(task.statement.log)
 
@@ -14,11 +23,29 @@ def run_algorithmic_task(task : AlgorithmicTaskConfig, store:Store):
 def run_generation_task(task: GenerationConfig, store:Store):
     config = task.config
     agents = repo.request(config)
-    outChan = task.outputChannels
-    for url in agents:
-        print("sending request to " + url)
-    for c in outChan:
-        store.write(c, "done")
+    with Manager() as manager:
+        accu = manager.list()
+        processes = []
+        for url in agents:
+            process = Process(
+                target=_run_connect_and_send,
+                args=(url, task.config.skill, accu),
+            )
+            process.start()
+            processes.append((url, process))
+            print("sending request to " + url)
+
+        for (_, process) in processes:
+            process.join()
+
+        failed_agents = [ url for (url, process) in processes if process.exitcode != 0 ]
+        for a in failed_agents:
+            print ("Agent process failed:", a)
+        if len(accu) > 0 :
+            (artifact_name,v) = accu[0] # FIXME: choose the value according to the config.solutionJoin Solution Join.
+            if artifact_name == "solution" :
+                store.write( task.outputChannels[0], v) # FIXME: how to choose between multiple output channels?
+
 
 
 def run_evaluation_task(task, store:Store):
@@ -68,5 +95,4 @@ def run_workflow(workflow: Workflow, inputs):
 
     run_step(workflow.body, store)
     return store
-
 
