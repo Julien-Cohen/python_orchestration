@@ -1,5 +1,6 @@
 from pathlib import Path
 
+import pytest
 import yaml
 
 from orchestrator.workflow_datatype.workflows import Workflow
@@ -43,3 +44,14 @@ def test_req_patch_workflow_loads():
 
     assert workflow.type == "workflow"
     assert workflow.body.type == "sequence"
+
+
+def test_duplicate_channel_names_raise_exception():
+    file = (Path(__file__).parent / "error_cases" / "duplicate.yaml")
+    data = yaml.safe_load(file.read_text())
+
+    with pytest.raises(
+        Exception,
+        match=r"Some channels are declared several times: \['specification'\]",
+    ):
+        Workflow.model_validate(data)
