@@ -17,3 +17,12 @@ def test_minimal_statement_workflow_runs(capsys):
 
     assert capsys.readouterr().out.strip() == "hello"
 
+def test_minimal_generation_workflow_runs(capsys):
+    file = (Path(__file__).parent / "minimal_generation_workflow.yaml")
+    data = yaml.safe_load(file.read_text())
+
+    workflow = Workflow.model_validate(data)
+
+    result_store = run_workflow(workflow, [])
+
+    assert result_store.store["final-result"]=="done"

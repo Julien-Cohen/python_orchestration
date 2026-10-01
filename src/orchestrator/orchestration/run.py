@@ -1,15 +1,24 @@
+from orchestrator.orchestration.agent_repository import AgentRepository
+from orchestrator.workflow_datatype.agent_task import GenerationConfig
 from orchestrator.workflow_datatype.algorithmic_task import AlgorithmicTaskConfig
 from orchestrator.orchestration.state import Store
 from orchestrator.workflow_datatype.workflows import Workflow, Step, Sequence, AlgorithmicStep, GenerationStep, \
     EvaluationStep, RetryUntilValidated, AccumulateLoop, ParallelBuild, ParallelEvaluation, ReplyStep
 
+repo = AgentRepository()
 
 def run_algorithmic_task(task : AlgorithmicTaskConfig, store:Store):
     print(task.statement.log)
 
 
-def run_generation_task(task, store:Store):
-    pass # FIXME
+def run_generation_task(task: GenerationConfig, store:Store):
+    config = task.config
+    agents = repo.request(config)
+    outChan = task.outputChannels
+    for url in agents:
+        print("sending request to " + url)
+    for c in outChan:
+        store.write(c, "done")
 
 
 def run_evaluation_task(task, store:Store):
@@ -58,5 +67,6 @@ def run_workflow(workflow: Workflow, inputs):
     store = Store(workflow, inputs)
 
     run_step(workflow.body, store)
+    return store
 
 
