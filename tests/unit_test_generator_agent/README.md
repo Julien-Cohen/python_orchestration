@@ -1,4 +1,4 @@
-# A2A Python Mock Generator
+# A2A Mock Generator Agent
 
 
 ```bash
