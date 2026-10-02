@@ -15,6 +15,7 @@ jobs:
       - name: Check out repository
         uses: actions/checkout@v4
       - name: Install project and test dependencies
+        working-directory: engine
         run: python -m pip install -e ".[test]"
       # Use python to download YQ to avoid installing curl.
       - name: Install yq
@@ -26,4 +27,5 @@ jobs:
           chmod +x /usr/local/bin/yq
           yq --version
       - name: Run tests
+        working-directory: engine
         run: python -m pytest -v
