@@ -1,0 +1,27 @@
+[build-system]
+requires = ["uv_build>=0.11.7,<0.12"]
+build-backend = "uv_build"
+
+[project]
+name = "orchestrator-agent"
+version = "2.0.1"
+description = "Orchestrator agent"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "dotenv>=0.9.9",
+    "mosaico-base-agent>=0.3.2",
+    "mosaico-orchestrator==2.0.1"
+]
+
+[project.scripts]
+orchestrator-agent = "orchestrator_agent.main:main"
+
+[[tool.uv.index]]
+name = "mosaico"
+url = "https://gitlab.eclipse.org/api/v4/projects/12942/packages/pypi/simple"
+explicit = true
+
+[tool.uv.sources]
+mosaico-base-agent = { index = "mosaico" }
+mosaico-orchestrator = { path = "../engine", editable = true }
