@@ -1,5 +1,6 @@
 # SPDX-FileCopyright: 2026 University of York
 # SPDX-License: MIT
+import logging
 
 from dotenv import load_dotenv
 
@@ -11,6 +12,7 @@ from .executor import OrchestrationExecutor
 
 
 def main():
+    logging.basicConfig(level=logging.INFO)
     load_dotenv()
     config = MosaicoConfig.from_env()
     initialize_langfuse(blocked_scopes=["a2a-python-sdk"])
