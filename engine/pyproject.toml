@@ -5,7 +5,7 @@ requires-python = ">=3.12"
 dependencies = [
     "pydantic>=2",
     "PyYAML",
-    "a2a-sdk[http-server, grpc]==1.1.0",
+    "a2a-sdk[http-server, grpc]>=1.0.0,<1.1.0",
     "grpcio",
     "uvicorn",
     "fastapi"
