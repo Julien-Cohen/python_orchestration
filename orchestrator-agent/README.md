@@ -31,3 +31,13 @@ uv run send_request.py
 
 You will be then placed in a prompting loop: type the message and press Enter.
 You can exit the loop by entering  `exit`.
+
+# Build the Docker image
+
+Run this command from the `orchestrator-agent` directory. The parent directory
+is used as the build context so Docker can access both this project and the
+sibling `engine` project:
+
+```bash
+docker build -f src/orchestrator_agent/docker/Dockerfile -t test-orchestrator-agent:latest ..
+```

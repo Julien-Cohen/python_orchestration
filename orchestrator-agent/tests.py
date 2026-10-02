@@ -5,13 +5,13 @@ from typing import List, override
 from mosaico.base.testing import create_data_part, create_text_part, create_context, AgentExecutorTest
 
 from a2a.types import Message, Part
-from orchestrator_agent.executor import ArithmeticExecutor
+from orchestrator_agent.executor import OrchestrationExecutor
 
-class TestArithmeticExecutor(AgentExecutorTest):
+class TestOrchestrationExecutor(AgentExecutorTest):
     @override
     async def asyncSetUp(self):
         await super().asyncSetUp()
-        self.executor = ArithmeticExecutor()
+        self.executor = OrchestrationExecutor()
 
     async def test_no_parts(self):
         context = create_context([])

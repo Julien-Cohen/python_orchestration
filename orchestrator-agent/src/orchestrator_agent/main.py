@@ -7,7 +7,7 @@ from mosaico.base.config import MosaicoConfig
 from mosaico.base.langfuse import initialize_langfuse
 from mosaico.base.main import MosaicoAgentMain
 from .card import create_card
-from .executor import ArithmeticExecutor
+from .executor import OrchestrationExecutor
 
 
 def main():
@@ -17,7 +17,7 @@ def main():
 
     main = MosaicoAgentMain(
         agent_card=create_card(config),
-        agent_executor=ArithmeticExecutor(agent_name="arithmetic-agent")
+        agent_executor=OrchestrationExecutor(agent_name="orchestrator-agent")
     )
     main.run(config)
 

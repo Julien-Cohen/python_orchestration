@@ -14,53 +14,14 @@ from a2a.server.events import EventQueue
 from mosaico.base.executor import MosaicoAgentExecutor, HEALTH_OK
 from mosaico.base.observability import MosaicoObservabilityMetadata
 
-import ast
-import operator as op
 
 import logging
 logger = logging.getLogger(__name__)
 
-operators = {ast.Add: op.add, ast.Sub: op.sub, ast.Mult: op.mul,
-             ast.Div: op.truediv, ast.Pow: op.pow, ast.BitXor: op.xor,
-             ast.USub: op.neg}
+def orchestrate(prompt:str):
+    return 0
 
-max_value = 10**100
-
-def eval_expr(expr):
-    """
-    >>> eval_expr('2^6')
-    4
-    >>> eval_expr('2**6')
-    64
-    >>> eval_expr('1 + 2*3**(4^5) / (6 + -7)')
-    -5.0
-    """
-    result = eval_ast(ast.parse(expr, mode='eval').body)
-    if result > max_value:
-        raise ValueError(f"intermediate result too high: {result}")
-    return result
-
-
-def eval_limited(node):
-    result = eval_ast(node)
-    if result > max_value:
-        raise ValueError(f"intermediate result too high: {result}")
-    return result
-
-
-def eval_ast(node):
-    match node:
-        case ast.Constant(value) if isinstance(value, int):
-            return value  # integer
-        case ast.BinOp(left, op, right):
-            return operators[type(op)](eval_limited(left), eval_limited(right))
-        case ast.UnaryOp(op, operand):  # e.g., -1
-            return operators[type(op)](eval_limited(operand))
-        case _:
-            raise TypeError(node)
-
-
-class ArithmeticExecutor(MosaicoAgentExecutor):
+class OrchestrationExecutor(MosaicoAgentExecutor):
     @override
     async def execute_agent(
             self,
@@ -74,7 +35,7 @@ class ArithmeticExecutor(MosaicoAgentExecutor):
             await self.send_text_message(context, event_queue, 'Agent expected a TextPart')
         else:
             try:
-                result = eval_expr(context.message.parts[0].text)
+                result = orchestrate(context.message.parts[0].text)
                 await self.send_text_message(context, event_queue, str(result))
             except (ValueError, TypeError, SyntaxError) as _:
                 logger.exception("failed to evaluate expression")
