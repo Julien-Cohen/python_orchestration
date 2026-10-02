@@ -13,6 +13,8 @@ from a2a.server.agent_execution import RequestContext
 from a2a.server.events import EventQueue
 from a2a.server.tasks import TaskUpdater
 from a2a.types import Task, TaskState, TaskStatus
+from langfuse._client.get_client import get_client
+from langfuse._client.propagation import propagate_attributes
 from mosaico.base.executor import MosaicoAgentExecutor, HEALTH_OK
 from mosaico.base.observability import MosaicoObservabilityMetadata
 
@@ -49,6 +51,8 @@ class OrchestrationExecutor(MosaicoAgentExecutor):
             )
             return
 
+
+
         self.running_tasks.add(task_id)
 
         if not task:
@@ -60,20 +64,31 @@ class OrchestrationExecutor(MosaicoAgentExecutor):
             )
             await event_queue.enqueue_event(task)
 
+        #task.metadata.update(observability_metadata)
+
+
         updater = TaskUpdater(
             event_queue=event_queue,
             task_id=task_id,
             context_id=context_id,
         )
 
+
+
+
         if len(context.message.parts) != 1:
             await self.send_text_message(context, event_queue, 'Message did not have exactly one part')
         elif not context.message.parts[0].HasField('text'):
             await self.send_text_message(context, event_queue, 'Agent expected a TextPart')
         else:
-            try:
-                result = orchestrate(context.message.parts[0].text)
 
+            prompt = context.message.parts[0].text
+
+            get_client().update_current_span(input={"prompt": prompt})
+            try:
+
+                result = orchestrate(prompt)
+                get_client().update_current_span(output={"solution": result})
                 await updater.add_artifact(
                     parts=[new_text_part(result)],
                     name='solution',
