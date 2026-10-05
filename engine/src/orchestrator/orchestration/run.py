@@ -12,8 +12,8 @@ from orchestrator.workflow_datatype.workflows import Workflow, Step, Sequence, A
 repo = AgentRepository()
 
 
-def _run_connect_and_send(url, skill, accu):
-    asyncio.run(connect_and_send(url, skill, accu))
+def _run_connect_and_send(url, params:list[str], accu):
+    asyncio.run(connect_and_send(url, params, accu))
 
 
 def run_algorithmic_task(task : AlgorithmicTaskConfig, store:Store):
@@ -23,13 +23,17 @@ def run_algorithmic_task(task : AlgorithmicTaskConfig, store:Store):
 def run_generation_task(task: GenerationConfig, store:Store):
     config = task.config
     agents = repo.request(config)
+    content = []
+    content.append (config.skill)
+    for i in task.inputChannels:
+        content.append(store.store[i])
     with Manager() as manager:
-        accu = manager.list()
+        accu = manager.list() # result accumulator
         processes = []
         for url in agents:
             process = Process(
                 target=_run_connect_and_send,
-                args=(url, task.config.skill, accu),
+                args=(url, content, accu),
             )
             process.start()
             processes.append((url, process))
@@ -90,7 +94,7 @@ def run_step(s: Step, store:Store):
         case _:
             raise TypeError(f"Unsupported step type: {type(s).__name__}")
 
-def run_workflow(workflow: Workflow, inputs):
+def run_workflow(workflow: Workflow, inputs:list[str]):
     store = Store(workflow, inputs)
 
     run_step(workflow.body, store)

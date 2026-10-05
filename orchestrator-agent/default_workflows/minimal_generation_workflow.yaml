@@ -4,10 +4,14 @@ type: workflow
 internalChannels: []
 inputChannels:
   - type: input-channel-declaration
-    name: final-result
+    name: prompt
     structure: Atom
     init_with_part: "no-value"
-outputChannels: []
+outputChannels:
+  - type: channel-declaration
+    name: final-result
+    structure: Atom
+    init_with_value:  "no-value"
 body:
   type: generation-step
   task:
@@ -22,7 +26,8 @@ body:
       maxEffort: 1000
       maxRetry: 2
     solutionJoin: First
-    inputChannels: []
+    inputChannels:
+      - prompt
     feedbackChannels: []
     outputChannels:
       - final-result

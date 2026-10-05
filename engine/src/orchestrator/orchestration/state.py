@@ -10,7 +10,7 @@ class Store:
         store: Maps channel names to their current values.
     """
 
-    def __init__(self, workflow: Workflow, input_values):
+    def __init__(self, workflow: Workflow, input_values:list[str]):
 
         self.channels : dict[str, (ChannelDeclaration | InputChannelDeclaration)] = {}
 
@@ -19,8 +19,12 @@ class Store:
 
         self.store :dict[str, (str | list[str])] = {}
 
-        for c in workflow.inputChannels:
-            self.init_input_channel(c, input_values)
+        if len(workflow.inputChannels) != len(input_values):
+            raise ValueError("The number of input values in parameters should correspond to the number of input channels.")
+
+        for i in range(len (workflow.inputChannels)):
+            self.init_input_channel(workflow.inputChannels[i], input_values[i])
+
         for c in workflow.internalChannels:
             self.init_other_channel(c)
         for c in workflow.outputChannels:
@@ -57,8 +61,8 @@ class Store:
     def init_other_channel (self, c:ChannelDeclaration):
         self.store[c.name] = c.init_with_value
 
-    def init_input_channel (self, c:InputChannelDeclaration, input_values):
-        self.store[c.name] = c.init_with_part # FIXME : get part named c.init_with_part in input_values
+    def init_input_channel (self, c:InputChannelDeclaration, input_value: str):
+        self.store[c.name] = input_value # FIXME : get part named c.init_with_part in input_values
 
     def write (self, channel_name: str, value: str):
         if not(channel_name in self.channels):
@@ -75,4 +79,4 @@ class Store:
                 raise ValueError("Unrecognized Channel Structure.")
 
     def __str__(self) -> str:
-        return "STRORE CONTENT: " + str(self.store)
+        return "STORE CONTENT: " + str(self.store)

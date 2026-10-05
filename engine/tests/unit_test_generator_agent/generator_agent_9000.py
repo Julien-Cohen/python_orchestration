@@ -68,6 +68,8 @@ class SampleAgentExecutor(AgentExecutor):
         task_id = context.task_id
         context_id = context.context_id
 
+        for p in context.message.parts :
+            print("PROMPT: " + p.text) # fixme : handle other kinds of parts
         print("TASK ID = " + task_id)
         print("CONTEXT ID = " + context_id)
 

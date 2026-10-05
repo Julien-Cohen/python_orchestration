@@ -61,7 +61,7 @@ async def _handle_stream(
     return current_task_id
 
 
-async def connect_and_send(target_url, prompt, accu) -> None:
+async def connect_and_send(target_url, parameters:list[str], accu) -> None:
     """Run an A2A client."""
 
     config = ClientConfig(
@@ -88,10 +88,12 @@ async def connect_and_send(target_url, prompt, accu) -> None:
     current_task_id = None
     current_context_id = str(uuid.uuid4())
 
+    parts = [Part(text=p) for p in parameters]
+
     message = Message(
         role=Role.ROLE_USER,
         message_id=str(uuid.uuid4()),
-        parts=[Part(text=prompt)],
+        parts=parts,
         task_id=current_task_id,
         context_id=current_context_id,
     )
