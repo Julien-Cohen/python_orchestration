@@ -1,16 +1,18 @@
 # Orchestrator Agent
 
+# Requirements
+
+Install `uv`, then:
 
 ```bash
-  pip install -e ../engine
-  pip install -e . --index-url https://gitlab.eclipse.org/api/v4/projects/12942/packages/pypi/simple --extra-index-url https://pypi.org/simple
+uv sync
 ```
 
-## Running the agent
+## Run the agent
 
 ```shell
 uv sync
-uv run orchestrator-agent
+PORT=9001 uv run orchestrator-agent "default_workflows/minimal_generation_workflow.yaml"
 ```
 
 ## Testing the agent from Bash
@@ -18,7 +20,7 @@ uv run orchestrator-agent
 With `curl` installed:
 
 ```bash
-./send_request.sh "2 * 4 + 5"
+./send_request.sh "generate something"
 ```
 
 ## Testing the agent from Python

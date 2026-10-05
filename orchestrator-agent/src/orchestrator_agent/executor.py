@@ -1,10 +1,3 @@
-# Sample agent that evaluates an arithmetic expression
-#
-# Based on answer from:
-# https://stackoverflow.com/questions/2371436/
-#
-# SPDX-FileCopyright: 2026 University of York
-# SPDX-License: MIT
 from typing import Optional
 from typing import override
 
@@ -14,22 +7,28 @@ from a2a.server.events import EventQueue
 from a2a.server.tasks import TaskUpdater
 from a2a.types import Task, TaskState, TaskStatus
 from langfuse._client.get_client import get_client
-from langfuse._client.propagation import propagate_attributes
 from mosaico.base.executor import MosaicoAgentExecutor, HEALTH_OK
 from mosaico.base.observability import MosaicoObservabilityMetadata
 
 
 import logging
+
+from orchestrator.orchestration import run
+from orchestrator.workflow_datatype.workflows import Workflow
+from orchestrator.yaml_schema import read_yaml_workflow
+
 logger = logging.getLogger(__name__)
 
-def orchestrate(prompt:str):
-    return str(0) # fixme
+def orchestrate(prompt:str, workflow: Workflow):
+    result_store = run.run_workflow(workflow, prompt)
+    return str(result_store)
 
 class OrchestrationExecutor(MosaicoAgentExecutor):
 
-    def __init__(self, agent_name:str) -> None:
+    def __init__(self, agent_name:str, workflow_file) -> None:
         super().__init__(agent_name=agent_name) # fixme : check the parameters
         self.running_tasks: set[str] = set() # fixme : do we really need that ?
+        self.workflow = read_yaml_workflow.read_file(workflow_file)
 
     @override
     async def execute_agent(
@@ -52,7 +51,6 @@ class OrchestrationExecutor(MosaicoAgentExecutor):
             return
 
 
-
         self.running_tasks.add(task_id)
 
         if not task:
@@ -64,16 +62,12 @@ class OrchestrationExecutor(MosaicoAgentExecutor):
             )
             await event_queue.enqueue_event(task)
 
-        #task.metadata.update(observability_metadata)
-
 
         updater = TaskUpdater(
             event_queue=event_queue,
             task_id=task_id,
             context_id=context_id,
         )
-
-
 
 
         if len(context.message.parts) != 1:
@@ -87,7 +81,7 @@ class OrchestrationExecutor(MosaicoAgentExecutor):
             get_client().update_current_span(input={"prompt": prompt})
             try:
 
-                result = orchestrate(prompt)
+                result = orchestrate(prompt, self.workflow)
                 get_client().update_current_span(output={"solution": result})
                 await updater.add_artifact(
                     parts=[new_text_part(result)],

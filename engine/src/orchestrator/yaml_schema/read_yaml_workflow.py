@@ -5,24 +5,27 @@ import yaml
 
 from orchestrator.workflow_datatype.workflows import Workflow
 
-if len(sys.argv) != 2:
-    print(f"Usage: python {sys.argv[0]} <path_to_yaml_file>")
-    sys.exit(1)
 
-with open(sys.argv[1], "r") as f:
-    raw_data = yaml.safe_load(f)
+def read_file(filename) -> Workflow:
+    with open(filename, "r") as f:
+        raw_data = yaml.safe_load(f)
 
-
+    return Workflow.model_validate(raw_data)
 
 
-print("-- Trying to read a Workflow. --")
+def main():
+    if len(sys.argv) != 2:
+        print(f"Usage: python {sys.argv[0]} <path_to_yaml_file>")
+        sys.exit(1)
 
-try:
-    workflow = Workflow.model_validate(raw_data)
-    print("Workflow:", workflow)
+    print("-- Trying to read a Workflow. --")
 
-except ValidationError as e:
-    print("Invalid Workflow file:", e)
+    try:
+        workflow = read_file(sys.argv[1])
+        print("Workflow:", workflow)
 
+    except ValidationError as e:
+        print("Invalid Workflow file:", e)
 
-
+if __name__ == "__main__":
+    main()

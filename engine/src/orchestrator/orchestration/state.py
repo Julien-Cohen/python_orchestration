@@ -73,3 +73,6 @@ class Store:
                 self.store[channel_name].append(value)
             case _:
                 raise ValueError("Unrecognized Channel Structure.")
+
+    def __str__(self) -> str:
+        return "STRORE CONTENT: " + str(self.store)

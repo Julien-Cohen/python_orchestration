@@ -13,7 +13,7 @@ from a2a.types import AgentCard, Role, SendMessageRequest
 
 from mosaico.base.observability import OBSERVABILITY_KEY_ROOT_TASK_NAME
 
-DEFAULT_BASE_URL = "http://localhost:9000"
+DEFAULT_BASE_URL = "http://localhost:9001"
 
 
 def generate_lf_uuid():

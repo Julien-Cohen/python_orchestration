@@ -24,7 +24,7 @@ generate_half_uuid() {
 
 EXPR="$@"
 
-AGENT_URL="${AGENT_URL:-http://localhost:9000/}"
+AGENT_URL="${AGENT_URL:-http://localhost:9001/}"
 REQUEST_ID="$(generate_uuid)"
 MESSAGE_ID="$(generate_uuid)"
 ROOT_TASK_ID="$(generate_uuid)"
