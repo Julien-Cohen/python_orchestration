@@ -6,6 +6,7 @@ from orchestrator.orchestration.agent_repository import AgentRepository
 from orchestrator.workflow_datatype.agent_task import GenerationConfig
 from orchestrator.workflow_datatype.algorithmic_task import AlgorithmicTaskConfig
 from orchestrator.orchestration.state import Store
+from orchestrator.workflow_datatype.join import SolutionJoin
 from orchestrator.workflow_datatype.workflows import Workflow, Step, Sequence, AlgorithmicStep, GenerationStep, \
     EvaluationStep, RetryUntilValidated, AccumulateLoop, ParallelBuild, ParallelEvaluation, ReplyStep
 
@@ -20,9 +21,36 @@ def run_algorithmic_task(task : AlgorithmicTaskConfig, store:Store):
     print(task.statement.log)
 
 
+def _resize_list(l:list, n:int):
+    """Returns a list of n elements made from the elements of l. Used to generate n urls of agents when we know len(l) urls."""
+    if n < 0:
+        raise ValueError("N must be non-negative")
+    if n == 0:
+        return []
+    if not l:
+        raise ValueError("Cannot fill a result from an empty list")
+
+    full_repeats, remainder = divmod(n, len(l))
+    return l * full_repeats + l[:remainder]
+
+def choose_from_join (results, j:SolutionJoin):
+    assert len(results)>0
+    (name,v) = results[0]
+    match j:
+        case SolutionJoin.MULTIPLE_VALUE:
+            return (name, [ r for (_,r) in results])
+        case SolutionJoin.LIST :
+            return (name, [ r for (_,r) in results]) # fixme : what's the difference betwee a bag and a list here ?
+        case SolutionJoin.FIRST:
+            return (name,v)
+        case SolutionJoin.ARBITRATION:
+            raise ValueError("FIXME : Arbitration not implemented yet.") # fixme
+
+
 def run_generation_task(task: GenerationConfig, store:Store):
     config = task.config
     agents = repo.request(config)
+    consolidated_agents = _resize_list(agents, config.nbSpawns)
     content = []
     content.append (config.skill)
     for i in task.inputChannels:
@@ -30,7 +58,7 @@ def run_generation_task(task: GenerationConfig, store:Store):
     with Manager() as manager:
         accu = manager.list() # result accumulator
         processes = []
-        for url in agents:
+        for url in consolidated_agents:
             process = Process(
                 target=_run_connect_and_send,
                 args=(url, content, accu),
@@ -46,9 +74,11 @@ def run_generation_task(task: GenerationConfig, store:Store):
         for a in failed_agents:
             print ("Agent process failed:", a)
         if len(accu) > 0 :
-            (artifact_name,v) = accu[0] # FIXME: choose the value according to the config.solutionJoin Solution Join.
+            (artifact_name,v) = choose_from_join(accu, task.solutionJoin)
             if artifact_name == "solution" :
                 store.write( task.outputChannels[0], v) # FIXME: how to choose between multiple output channels?
+            else:
+                print("FIXME: unrecognized write channel.")
 
 
 

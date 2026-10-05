@@ -1,0 +1,30 @@
+$schema: "../or_lang_ast/workflow_schema.yaml"
+
+# test with spawn = 2
+
+type: workflow
+internalChannels: []
+inputChannels:
+  - type: input-channel-declaration
+    name: final-result
+    structure: Atom
+    init_with_part: "no-value"
+outputChannels: []
+body:
+  type: generation-step
+  task:
+    config:
+      skill: Generate something.
+      nbSpawns: 2
+      nbDifferentAgents: 1
+      nbRequiredAnswers: 1
+      agentTimeout: 30000
+      onAgentFailure: RetryOther
+      onAgentRejection: NoRetry
+      maxEffort: 1000
+      maxRetry: 2
+    solutionJoin: List
+    inputChannels: []
+    feedbackChannels: []
+    outputChannels:
+      - final-result
