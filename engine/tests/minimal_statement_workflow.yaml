@@ -8,7 +8,7 @@ internalChannels:
     init_with_value: "true"
 inputChannels:
   - type: input-channel-declaration
-    name: final-result
+    name: param
     structure: Atom
     init_with_part: "test"
 outputChannels: []

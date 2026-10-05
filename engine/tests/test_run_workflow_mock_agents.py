@@ -43,6 +43,6 @@ def test_minimal_generation_workflow_runs(start_mock_generator_agent):
 
     workflow = Workflow.model_validate(data)
 
-    result_store = run_workflow(workflow, [])
+    result_store = run_workflow(workflow, ["hello"])
 
     assert result_store.store["final-result"]=="mock generated text :-*"

@@ -13,6 +13,6 @@ def test_minimal_statement_workflow_runs(capsys):
 
     workflow = Workflow.model_validate(data)
 
-    run_workflow(workflow, [])
+    run_workflow(workflow, ["foo"])
 
     assert capsys.readouterr().out.strip() == "hello"
