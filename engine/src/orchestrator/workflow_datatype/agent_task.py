@@ -110,8 +110,8 @@ class EvaluationConfig(BaseModel):
     solutionChannels : list[str]
     """List of channels to be read for the input data to be evaluated (mandatory)."""
 
-    evaluationChannel : list[str]
+    evaluationChannel : str
     """Channel to publish the result of the evaluation (mandatory)."""
 
-    explanationChannel : list[str]
+    explanationChannel : str
     """Channel to publish the explanation (optional)."""

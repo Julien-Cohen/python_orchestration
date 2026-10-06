@@ -73,7 +73,7 @@ def check_declared_step(names: list[str], s: Step):
             check_channels(names, s.task.inputChannels + s.task.feedbackChannels + s.task.outputChannels)
         case EvaluationStep():
             check_channels(names,
-                           s.task.specificationChannels + s.task.solutionChannels + s.task.evaluationChannel + s.task.explanationChannel)
+                           s.task.specificationChannels + s.task.solutionChannels + [s.task.evaluationChannel, s.task.explanationChannel])
         case RetryUntilValidated():
             check_channels(names, [s.acceptanceChannel])
             check_declared_step(names, s.body)

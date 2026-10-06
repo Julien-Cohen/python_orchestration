@@ -102,8 +102,8 @@ body:
                 "outputKind": "Boolean",
                 "specificationChannels": ["specification"],
                 "solutionChannels": ["atomic-requirement"],
-                "evaluationChannel": ["isCorrect"],
-                "explanationChannel": ["correctness-explanation"]
+                "evaluationChannel": "isCorrect",
+                "explanationChannel": "correctness-explanation"
               }
             - type : evaluation-step
               task: {
@@ -122,8 +122,8 @@ body:
                 "outputKind": "Boolean",
                 "specificationChannels": ["specification", "requirements"],
                 "solutionChannels": ["atomic-requirement"],
-                "evaluationChannel": ["non-redundancy"],
-                "explanationChannel": ["non-redundancy-explanation"]
+                "evaluationChannel": "non-redundancy",
+                "explanationChannel": "non-redundancy-explanation"
               }
             - type : evaluation-step
               task : {
@@ -142,8 +142,8 @@ body:
                 "outputKind": "Boolean",
                 "specificationChannels": ["requirements"],
                 "solutionChannels": ["atomic-requirement"],
-                "evaluationChannel": ["satisfiability"],
-                "explanationChannel": ["satisfiability-explanation"]
+                "evaluationChannel": satisfiability,
+                "explanationChannel": satisfiability-explanation
               }
           reconciliation: Unanimity
       acceptanceChannel: isCorrect
@@ -176,8 +176,8 @@ body:
           outputKind: Boolean
           specificationChannels: [ specification ]
           solutionChannels: [ requirements ]
-          evaluationChannel: [ completeness ]
-          explanationChannel: [ completeness-explanation ]
+          evaluationChannel: completeness
+          explanationChannel: completeness-explanation
   stopChannel: isComplete
 
 

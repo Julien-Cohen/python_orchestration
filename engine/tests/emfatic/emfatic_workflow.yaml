@@ -78,10 +78,8 @@ body:
             specificationChannels: []
             solutionChannels:
             - meta-model
-            evaluationChannel:
-            - syntactic-correctness
-            explanationChannel:
-            - syntactic-errors
+            evaluationChannel: syntactic-correctness
+            explanationChannel: syntactic-errors
       acceptanceChannel: syntactic-correctness
     step2:
       # semantic validation
@@ -103,8 +101,6 @@ body:
         - specification
         solutionChannels:
         - meta-model
-        evaluationChannel:
-        - semantic-correctness
-        explanationChannel:
-        - semantic-feedback
+        evaluationChannel: semantic-correctness
+        explanationChannel: semantic-feedback
   acceptanceChannel: semantic-correctness

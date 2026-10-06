@@ -80,10 +80,8 @@ body:
           specificationChannels: [ ]
           solutionChannels:
             - review
-          evaluationChannel:
-            - review-correctness
-          explanationChannel:
-            - expert-feedback
+          evaluationChannel: review-correctness
+          explanationChannel: expert-feedback
     acceptanceChannel: review-correctness
   step2:
     # Generate a patch.

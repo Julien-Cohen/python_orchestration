@@ -242,18 +242,12 @@
           "type": "array"
         },
         "evaluationChannel": {
-          "items": {
-            "type": "string"
-          },
           "title": "Evaluationchannel",
-          "type": "array"
+          "type": "string"
         },
         "explanationChannel": {
-          "items": {
-            "type": "string"
-          },
           "title": "Explanationchannel",
-          "type": "array"
+          "type": "string"
         }
       },
       "required": [

@@ -5,7 +5,7 @@ from orchestrator.orchestration.agent_repository import AgentRepository
 from orchestrator.workflow_datatype.agent_task import GenerationConfig, EvaluationConfig
 from orchestrator.workflow_datatype.algorithmic_task import AlgorithmicTaskConfig
 from orchestrator.orchestration.state import Store
-from orchestrator.workflow_datatype.join import SolutionJoin
+from orchestrator.workflow_datatype.join import SolutionJoin, DecisionMode
 from orchestrator.workflow_datatype.workflows import Workflow, Step, Sequence, AlgorithmicStep, GenerationStep, \
     EvaluationStep, RetryUntilValidated, AccumulateLoop, ParallelBuild, ParallelEvaluation, ReplyStep
 
@@ -40,6 +40,21 @@ def join_results (results:list, j:SolutionJoin):
         case SolutionJoin.ARBITRATION:
             raise ValueError("FIXME : Arbitration not implemented yet.") # fixme
 
+def join_evaluations (results:list, j:DecisionMode):
+    """Build an evaluation from a list of evaluations from several agents and a reconciliation strategy."""
+
+    assert len(results)>0
+    (name,v) = results[0]
+    match j:
+        case DecisionMode.MAJORITY:
+            return (name,v) # fixme
+        case  DecisionMode.UNANIMITY:
+            return (name,v) # fixme
+        case DecisionMode.THRESHOLD:
+            return (name,v) # fixme
+        case DecisionMode.DEBATE:
+            raise ValueError("FIXME : Debate not implemented yet.") # fixme
+
 DEFAULT_FUEL = 5
 """Limit to the number of loop repeats to avoid infinite loops."""
 
@@ -53,17 +68,16 @@ class Runner:
         self.push_artifact = push_artifact_callback
 
     async def run_algorithmic_task(self, task : AlgorithmicTaskConfig, store:Store):
-        print(task.statement.log)
+        print(task.statement.log) # fixme
 
     async def run_generation_task(self, task: GenerationConfig, store:Store):
         config = task.config
-        agents = self.repo.request(config)
+        agents = self.repo.requestSolutionAgent(config)
         consolidated_agents = _resize_list(agents, config.nbSpawns)
         message_content = []
         message_content.append (config.skill)
-        for i in task.inputChannels:
+        for i in task.inputChannels + task.feedbackChannels:
             message_content.append(store.store[i])
-
 
         accu = [] # result accumulator
 
@@ -87,11 +101,49 @@ class Runner:
 
 
     async def run_evaluation_task(self, task:EvaluationConfig, store:Store):
-        pass # FIXME
+        config = task.config
+        agents = self.repo.requestEvaluationAgent(config)
+        consolidated_agents = _resize_list(agents, config.nbSpawns)
+        message_content = []
+        message_content.append(config.skill)
+        for i in task.specificationChannels + task.solutionChannels:
+            message_content.append(store.store[i])
 
+        accu = []  # result accumulator
 
-    async def run_retry_loop(self, loop:RetryUntilValidated, store:Store):
-        pass # FIXME
+        results = await asyncio.gather(
+            *(connect_and_send(url, message_content, accu) for url in consolidated_agents),
+            return_exceptions=True,
+        )
+
+        for (url, r) in zip(consolidated_agents, results):
+            if isinstance(r, BaseException):
+                print("Agent failed or canceled:", url, r)
+
+        if len(accu) > 0:
+            (artifact_name, v) = join_evaluations(accu, task.consensusType)
+            if artifact_name == "evaluation":
+                store.write(task.evaluationChannel, v)  # FIXME: also write explanations in explanationChannel
+            else:
+                print("FIXME: unrecognized write channel.")
+        else:
+            raise RuntimeError("No output produced for this evaluation task")
+
+        # TODO : mock evaluation agent and unit test for evaluation task
+
+    async def run_retry_loop(self, loop:RetryUntilValidated, store:Store, fuel:int):
+        """
+        Run loop.body until loop.acceptanceChannel contains true (according to the store).
+        """
+        if fuel <= 0 or (store.read(loop.acceptanceChannel) == True):  # v == True instead of v on purpose.
+            return
+        else:
+            await self.run_step(loop.body, store)
+            await self.run_retry_loop(loop, store, (fuel - 1))
+
+        # TODO : what's the difference between retry-loop and accumulate-loop ?
+        # TODO : add the fuel in the config of the loop (in the yaml file)
+        # TODO : unit tests for retry-loop
 
 
     async def run_accumulate_loop(self, loop:AccumulateLoop, store:Store, fuel:int):
@@ -125,7 +177,7 @@ class Runner:
             case EvaluationStep():
                 await self.run_evaluation_task(s.task, store)
             case RetryUntilValidated():
-                await self.run_retry_loop(s.body, store)
+                await self.run_retry_loop(s, store, DEFAULT_FUEL)
             case AccumulateLoop():
                 await self.run_accumulate_loop(s, store, DEFAULT_FUEL)
             case ParallelBuild():
