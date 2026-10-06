@@ -7,7 +7,7 @@ from pathlib import Path
 import pytest
 import yaml
 
-from orchestrator.orchestration.run import run_workflow
+from orchestrator.orchestration.run import Runner
 from orchestrator.workflow_datatype.workflows import Workflow
 
 @pytest.fixture
@@ -43,7 +43,7 @@ def test_minimal_generation_workflow_runs(start_mock_generator_agent):
 
     workflow = Workflow.model_validate(data)
 
-    result_store = run_workflow(workflow, ["hello"])
+    result_store = Runner().run_workflow(workflow, ["hello"])
 
     assert result_store.store["final-result"]=="mock generated text :-*"
 
@@ -53,6 +53,6 @@ def test_alt_generation_workflow_runs(start_mock_generator_agent):
 
     workflow = Workflow.model_validate(data)
 
-    result_store = run_workflow(workflow, ["hello"])
+    result_store = Runner().run_workflow(workflow, ["hello"])
 
     assert result_store.store["final-result"]== ["mock generated text :-*", "mock generated text :-*"]

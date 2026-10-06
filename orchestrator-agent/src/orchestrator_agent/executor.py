@@ -13,14 +13,14 @@ from mosaico.base.observability import MosaicoObservabilityMetadata
 
 import logging
 
-from orchestrator.orchestration import run
+from orchestrator.orchestration.run import Runner
 from orchestrator.workflow_datatype.workflows import Workflow
 from orchestrator.yaml_schema import read_yaml_workflow
 
 logger = logging.getLogger(__name__)
 
 def orchestrate(prompt:str, workflow: Workflow):
-    result_store = run.run_workflow(workflow, [prompt])
+    result_store = Runner().run_workflow(workflow, [prompt])
     return str(result_store)
 
 class OrchestrationExecutor(MosaicoAgentExecutor):

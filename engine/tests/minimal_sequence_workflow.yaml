@@ -23,4 +23,4 @@ body:
     # then do something else
     type: reply-step
     outputChannels:
-      - "final-result"
+      - final-result

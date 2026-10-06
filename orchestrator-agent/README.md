@@ -23,9 +23,11 @@ With `curl` installed:
 ./send_request.sh "generate something"
 ```
 
+Use the Python code instead (see below) to have an interactive loop.
+
 ## Testing the agent from Python
 
-Please ensure that `AGENT_CARD_HOST` is set to `localhost` for this case first.
+Change `DEFAULT_BASE_URL = "http://localhost:9001"` in the Python file if needed. 
 
 ```bash
 uv run send_request.py

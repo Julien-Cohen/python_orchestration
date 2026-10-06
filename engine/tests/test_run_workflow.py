@@ -2,7 +2,7 @@ from pathlib import Path
 
 import yaml
 
-from orchestrator.orchestration.run import run_workflow
+from orchestrator.orchestration.run import Runner
 from orchestrator.workflow_datatype.workflows import Workflow
 
 
@@ -13,6 +13,6 @@ def test_minimal_statement_workflow_runs(capsys):
 
     workflow = Workflow.model_validate(data)
 
-    run_workflow(workflow, ["foo"])
+    Runner().run_workflow(workflow, ["foo"])
 
     assert capsys.readouterr().out.strip() == "hello"
