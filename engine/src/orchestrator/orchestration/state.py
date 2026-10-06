@@ -10,24 +10,22 @@ class Store:
         store: Maps channel names to their current values.
     """
 
-    def __init__(self, workflow: Workflow, input_values:list[str]):
+    def __init__(self, inputChannels: list[InputChannelDeclaration], otherChannels: list[ChannelDeclaration], input_values:list[str]):
 
         self.channels : dict[str, (ChannelDeclaration | InputChannelDeclaration)] = {}
 
-        for c in (workflow.inputChannels + workflow.internalChannels + workflow.outputChannels ):
+        for c in (inputChannels + otherChannels ):
             self.channels[c.name] = c
 
         self.store :dict[str, (str | list[str])] = {}
 
-        if len(workflow.inputChannels) != len(input_values):
+        if len(inputChannels) != len(input_values):
             raise ValueError("The number of input values in parameters should correspond to the number of input channels.")
 
-        for i in range(len (workflow.inputChannels)):
-            self.init_input_channel(workflow.inputChannels[i], input_values[i])
+        for i in range(len (inputChannels)):
+            self.init_input_channel(inputChannels[i], input_values[i])
 
-        for c in workflow.internalChannels:
-            self.init_other_channel(c)
-        for c in workflow.outputChannels:
+        for c in otherChannels:
             self.init_other_channel(c)
 
 

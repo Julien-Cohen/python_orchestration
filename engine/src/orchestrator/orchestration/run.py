@@ -133,7 +133,7 @@ class Runner:
                 print("[WARNING] Branch failure:", repr(r))
 
     async def run_workflow(self, workflow: Workflow, inputs:list[str]):
-        store = Store(workflow, inputs)
+        store = Store(workflow.inputChannels, workflow.internalChannels + workflow.outputChannels, inputs)
 
         await self.run_step(workflow.body, store)
         return store
