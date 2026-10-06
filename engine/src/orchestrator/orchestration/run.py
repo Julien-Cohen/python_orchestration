@@ -2,7 +2,7 @@ import asyncio
 
 from orchestrator.orchestration.a2a_client import connect_and_send
 from orchestrator.orchestration.agent_repository import AgentRepository
-from orchestrator.workflow_datatype.agent_task import GenerationConfig
+from orchestrator.workflow_datatype.agent_task import GenerationConfig, EvaluationConfig
 from orchestrator.workflow_datatype.algorithmic_task import AlgorithmicTaskConfig
 from orchestrator.orchestration.state import Store
 from orchestrator.workflow_datatype.join import SolutionJoin
@@ -40,6 +40,8 @@ def join_results (results:list, j:SolutionJoin):
         case SolutionJoin.ARBITRATION:
             raise ValueError("FIXME : Arbitration not implemented yet.") # fixme
 
+DEFAULT_FUEL = 5
+"""Limit to the number of loop repeats to avoid infinite loops."""
 
 class Runner:
     """
@@ -84,16 +86,23 @@ class Runner:
             raise RuntimeError("No output produced for this generation task")
 
 
-    async def run_evaluation_task(self, task, store:Store):
+    async def run_evaluation_task(self, task:EvaluationConfig, store:Store):
         pass # FIXME
 
 
-    async def run_retry_loop(self, body, store:Store):
+    async def run_retry_loop(self, loop:RetryUntilValidated, store:Store):
         pass # FIXME
 
 
-    async def run_accumulate_loop(self, body, store:Store):
-        pass # FIXME
+    async def run_accumulate_loop(self, loop:AccumulateLoop, store:Store, fuel:int):
+        """
+        Run loop.body until loop.stopChannel contains true (according to the store).
+        """
+        if fuel <= 0 or (store.read(loop.stopChannel) == True) : # v == True instead of v on purpose.
+            return
+        else:
+            await self.run_step(loop.body, store)
+            await self.run_accumulate_loop(loop, store, (fuel-1))
 
 
     async def run_reply_to_client(self, c:list[str], store:Store):
@@ -118,7 +127,7 @@ class Runner:
             case RetryUntilValidated():
                 await self.run_retry_loop(s.body, store)
             case AccumulateLoop():
-                await self.run_accumulate_loop(s.body, store)
+                await self.run_accumulate_loop(s, store, DEFAULT_FUEL)
             case ParallelBuild():
                 await self.run_in_parallel(s, store)
             case ParallelEvaluation():

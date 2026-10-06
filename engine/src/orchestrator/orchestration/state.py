@@ -57,7 +57,15 @@ class Store:
                 raise ValueError("Unrecognized Channel Structure.")
 
     def init_other_channel (self, c:ChannelDeclaration):
-        self.store[c.name] = c.init_with_value
+        match c.structure:
+            case ChannelStructure.Atom:
+                self.store[c.name] = c.init_with_value
+            case ChannelStructure.List:
+                self.store[c.name] = [] # FIXME
+            case ChannelStructure.Bag:
+                self.store[c.name] = [] # FIXME
+            case _:
+                raise ValueError("Unrecognized Channel Structure.")
 
     def init_input_channel (self, c:InputChannelDeclaration, input_value: str):
         self.store[c.name] = input_value # FIXME : get part named c.init_with_part in input_values
@@ -75,6 +83,11 @@ class Store:
                 self.store[channel_name].append(value)
             case _:
                 raise ValueError("Unrecognized Channel Structure.")
+
+    def read(self, channel_name:str):
+        if not(channel_name in self.channels):
+            raise ValueError("Channel " + channel_name + " is not referenced in this store.")
+        return self.store[channel_name]
 
     def __str__(self) -> str:
         return "STORE CONTENT: " + str(self.store)

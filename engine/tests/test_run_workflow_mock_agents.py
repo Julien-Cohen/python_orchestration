@@ -45,7 +45,7 @@ async def test_minimal_generation_workflow_runs(start_mock_generator_agent):
 
     result_store = await Runner(None).run_workflow(workflow, ["hello"])
 
-    assert result_store.store["final-result"]=="mock generated text :-*"
+    assert result_store.read("final-result")=="mock generated text :-*"
 
 async def test_alt_generation_workflow_runs(start_mock_generator_agent):
     file = (Path(__file__).parent / "alt_generation_workflow.yaml")
@@ -55,4 +55,14 @@ async def test_alt_generation_workflow_runs(start_mock_generator_agent):
 
     result_store = await Runner(None).run_workflow(workflow, ["hello"])
 
-    assert result_store.store["final-result"]== ["mock generated text :-*", "mock generated text :-*"]
+    assert result_store.read("final-result")== ["mock generated text :-*", "mock generated text :-*"]
+
+async def test_accumulation_workflow_runs(start_mock_generator_agent):
+    file = (Path(__file__).parent / "minimal_accumulation_workflow.yaml")
+    data = yaml.safe_load(file.read_text())
+
+    workflow = Workflow.model_validate(data)
+
+    result_store = await Runner(None).run_workflow(workflow, ["hello"])
+
+    assert result_store.read("accu")== 5*["mock generated text :-*"]

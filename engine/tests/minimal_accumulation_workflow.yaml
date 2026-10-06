@@ -1,0 +1,39 @@
+$schema: "../orchestrator/yaml_schema/workflow_schema.yaml"
+
+type: workflow
+internalChannels:
+  - type : channel-declaration
+    name : should-stop
+    structure : Atom
+    init_with_value : "False"
+  - type: channel-declaration
+    name: accu
+    structure: List
+    init_with_value: "empty"
+inputChannels:
+  - type: input-channel-declaration
+    name: spec
+    structure: Atom
+    init_with_part: "???"
+outputChannels: []
+body:
+  type: accumulate-loop
+  body:
+    type: generation-step
+    task:
+      config:
+        skill: Generate something.
+        nbSpawns: 1
+        nbDifferentAgents: 1
+        nbRequiredAnswers: 1
+        agentTimeout: 30000
+        onAgentFailure: RetryOther
+        onAgentRejection: NoRetry
+        maxEffort: 1000
+        maxRetry: 2
+      solutionJoin: First
+      inputChannels: []
+      feedbackChannels: []
+      outputChannels:
+        - accu
+  stopChannel: should-stop
