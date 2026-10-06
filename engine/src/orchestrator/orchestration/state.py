@@ -22,8 +22,8 @@ class Store:
         if len(inputChannels) != len(input_values):
             raise ValueError("The number of input values in parameters should correspond to the number of input channels.")
 
-        for i in range(len (inputChannels)):
-            self.init_input_channel(inputChannels[i], input_values[i])
+        for (c,v) in zip(inputChannels, input_values, strict=True):
+            self.init_input_channel(c,v)
 
         for c in otherChannels:
             self.init_other_channel(c)
