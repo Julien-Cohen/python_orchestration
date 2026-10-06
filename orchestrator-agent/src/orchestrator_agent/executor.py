@@ -20,7 +20,8 @@ from orchestrator.yaml_schema import read_yaml_workflow
 logger = logging.getLogger(__name__)
 
 def orchestrate(prompt:str, workflow: Workflow):
-    result_store = Runner().run_workflow(workflow, [prompt])
+    runner = Runner()
+    result_store = runner.run_workflow(workflow, [prompt])
     return str(result_store)
 
 class OrchestrationExecutor(MosaicoAgentExecutor):
@@ -69,6 +70,12 @@ class OrchestrationExecutor(MosaicoAgentExecutor):
             context_id=context_id,
         )
 
+        async def push(text:str):
+            await updater.add_artifact(
+                parts=[new_text_part(text)],
+                name='solution',
+                last_chunk=True,
+            )
 
         if len(context.message.parts) != 1:
             await self.send_text_message(context, event_queue, 'Message did not have exactly one part')
@@ -82,12 +89,8 @@ class OrchestrationExecutor(MosaicoAgentExecutor):
             try:
 
                 result = orchestrate(prompt, self.workflow)
-                get_client().update_current_span(output={"solution": result})
-                await updater.add_artifact(
-                    parts=[new_text_part(result)],
-                    name='solution',
-                    last_chunk=True,
-                )
+                get_client().update_current_span(output={"solution": result}) # langfuse
+                await push(result)
 
                 await updater.complete()
 
