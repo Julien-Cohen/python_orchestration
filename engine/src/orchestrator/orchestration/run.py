@@ -16,13 +16,13 @@ def _resize_list(l: list, n: int):
     Used to generate n urls of agents when we know len(l) urls.
     """
     if n < 0:
-        raise ValueError("N must be non-negative")
+        raise ValueError("n must be non-negative")
     if n == 0:
         return []
-    if not l:
-        raise ValueError("Cannot fill a result from an empty list")
+    if l == []:
+        raise ValueError("Empty list.")
 
-    full_repeats, remainder = divmod(n, len(l))
+    (full_repeats, remainder) = divmod(n, len(l))
     return l * full_repeats + l[:remainder]
 
 def choose_from_join (results, j:SolutionJoin):
@@ -32,7 +32,7 @@ def choose_from_join (results, j:SolutionJoin):
         case SolutionJoin.MULTIPLE_VALUE:
             return (name, [ r for (_,r) in results])
         case SolutionJoin.LIST :
-            return (name, [ r for (_,r) in results]) # fixme : what's the difference betwee a bag and a list here ?
+            return (name, [ r for (_,r) in results]) # fixme : what's the difference between a bag and a list here ?
         case SolutionJoin.FIRST:
             return (name,v)
         case SolutionJoin.ARBITRATION:
