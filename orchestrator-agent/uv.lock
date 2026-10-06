@@ -724,6 +724,7 @@ requires-dist = [
     { name = "grpcio" },
     { name = "pydantic", specifier = ">=2" },
     { name = "pytest", marker = "extra == 'test'" },
+    { name = "pytest-asyncio", marker = "extra == 'test'" },
     { name = "pyyaml" },
     { name = "uvicorn" },
 ]

@@ -19,9 +19,9 @@ from orchestrator.yaml_schema import read_yaml_workflow
 
 logger = logging.getLogger(__name__)
 
-def orchestrate(prompt:str, workflow: Workflow):
-    runner = Runner()
-    result_store = runner.run_workflow(workflow, [prompt])
+async def orchestrate(prompt:str, workflow: Workflow, push_artifact_callback):
+    runner = Runner(push_artifact_callback)
+    result_store = await runner.run_workflow(workflow, [prompt])
     return str(result_store)
 
 class OrchestrationExecutor(MosaicoAgentExecutor):
@@ -88,9 +88,8 @@ class OrchestrationExecutor(MosaicoAgentExecutor):
             get_client().update_current_span(input={"prompt": prompt})
             try:
 
-                result = orchestrate(prompt, self.workflow)
+                result = await orchestrate(prompt, self.workflow, push)
                 get_client().update_current_span(output={"solution": result}) # langfuse
-                await push(result)
 
                 await updater.complete()
 

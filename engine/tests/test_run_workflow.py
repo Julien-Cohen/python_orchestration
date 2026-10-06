@@ -7,12 +7,12 @@ from orchestrator.workflow_datatype.workflows import Workflow
 
 
 
-def test_minimal_statement_workflow_runs(capsys):
+async def test_minimal_statement_workflow_runs(capsys):
     file = (Path(__file__).parent / "minimal_statement_workflow.yaml")
     data = yaml.safe_load(file.read_text())
 
     workflow = Workflow.model_validate(data)
 
-    Runner().run_workflow(workflow, ["foo"])
+    await Runner(None).run_workflow(workflow, ["foo"])
 
     assert capsys.readouterr().out.strip() == "hello"

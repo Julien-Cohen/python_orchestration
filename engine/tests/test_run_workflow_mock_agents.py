@@ -37,22 +37,22 @@ def start_mock_generator_agent():
         process.terminate()
         process.wait(timeout=5)
 
-def test_minimal_generation_workflow_runs(start_mock_generator_agent):
+async def test_minimal_generation_workflow_runs(start_mock_generator_agent):
     file = (Path(__file__).parent / "minimal_generation_workflow.yaml")
     data = yaml.safe_load(file.read_text())
 
     workflow = Workflow.model_validate(data)
 
-    result_store = Runner().run_workflow(workflow, ["hello"])
+    result_store = await Runner(None).run_workflow(workflow, ["hello"])
 
     assert result_store.store["final-result"]=="mock generated text :-*"
 
-def test_alt_generation_workflow_runs(start_mock_generator_agent):
+async def test_alt_generation_workflow_runs(start_mock_generator_agent):
     file = (Path(__file__).parent / "alt_generation_workflow.yaml")
     data = yaml.safe_load(file.read_text())
 
     workflow = Workflow.model_validate(data)
 
-    result_store = Runner().run_workflow(workflow, ["hello"])
+    result_store = await Runner(None).run_workflow(workflow, ["hello"])
 
     assert result_store.store["final-result"]== ["mock generated text :-*", "mock generated text :-*"]

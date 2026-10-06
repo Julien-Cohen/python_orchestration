@@ -6,6 +6,10 @@ A datatype to specify MOSAICO workflows.
 ```bash
   pip install -e .
 ```
+Or:
+```bash
+  uv sync
+```
 
 # Generate the YAML schema
 
@@ -50,4 +54,11 @@ A datatype to specify MOSAICO workflows.
 ```bash
 python -m pip install -e ".[test]"
 python -m pytest -v
+```
+
+Or:
+
+```bash
+uv sync --extra test
+uv run pytest -v
 ```
