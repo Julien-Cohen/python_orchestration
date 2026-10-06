@@ -14,6 +14,7 @@ outputChannels:
     init_with_value:  "no-value"
 body:
   type: sequence
+
   step1:
     type: generation-step
     task:
@@ -33,6 +34,7 @@ body:
       feedbackChannels: []
       outputChannels:
         - final-result
+
   step2:
     type: reply-step
     outputChannels:

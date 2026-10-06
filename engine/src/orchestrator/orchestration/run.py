@@ -25,7 +25,9 @@ def _resize_list(l: list, n: int):
     (full_repeats, remainder) = divmod(n, len(l))
     return l * full_repeats + l[:remainder]
 
-def choose_from_join (results, j:SolutionJoin):
+def join_results (results:list, j:SolutionJoin):
+    """Build a result from a list of results from several agents and a reconciliation strategy."""
+
     assert len(results)>0
     (name,v) = results[0]
     match j:
@@ -55,25 +57,25 @@ class Runner:
         config = task.config
         agents = self.repo.request(config)
         consolidated_agents = _resize_list(agents, config.nbSpawns)
-        content = []
-        content.append (config.skill)
+        message_content = []
+        message_content.append (config.skill)
         for i in task.inputChannels:
-            content.append(store.store[i])
+            message_content.append(store.store[i])
 
 
         accu = [] # result accumulator
 
         results = await asyncio.gather(
-            *(connect_and_send(url, content, accu) for url in consolidated_agents),
+            *(connect_and_send(url, message_content, accu) for url in consolidated_agents),
             return_exceptions=True,
         )
 
-        for url, r in zip(consolidated_agents, results):
+        for (url, r) in zip(consolidated_agents, results):
             if isinstance(r, BaseException):
                 print("Agent failed or canceled:", url, r)
 
         if len(accu) > 0 :
-            (artifact_name,v) = choose_from_join(accu, task.solutionJoin)
+            (artifact_name,v) = join_results(accu, task.solutionJoin)
             if artifact_name == "solution" :
                 store.write( task.outputChannels[0], v) # FIXME: how to choose between multiple output channels?
             else:

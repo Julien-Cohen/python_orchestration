@@ -12,7 +12,7 @@ uv sync
 
 ```shell
 uv sync
-PORT=9001 uv run orchestrator-agent "default_workflows/minimal_generation_workflow.yaml"
+PORT=9001 uv run orchestrator-agent "default_workflows/example_generation_workflow.yaml"
 ```
 
 ## Testing the agent from Bash

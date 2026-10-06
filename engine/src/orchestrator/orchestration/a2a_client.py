@@ -64,13 +64,9 @@ async def _handle_stream(
 async def connect_and_send(target_url, parameters:list[str], accu) -> None:
     """Run an A2A client."""
 
-    config = ClientConfig(
-        grpc_channel_factory=grpc.aio.insecure_channel,
-    )
+    config = ClientConfig( grpc_channel_factory=grpc.aio.insecure_channel )
 
-    print(
-        f'Connecting to {target_url}.'
-    )
+    print( f'Connecting to {target_url}.' )
 
     async with httpx.AsyncClient() as httpx_client:
         resolver = A2ACardResolver(httpx_client, target_url)
