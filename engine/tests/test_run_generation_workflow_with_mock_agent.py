@@ -9,33 +9,12 @@ import yaml
 
 from orchestrator.orchestration.run import Runner
 from orchestrator.workflow_datatype.workflows import Workflow
+from mock_tools import start_mock_agent
 
 @pytest.fixture
 def start_mock_generator_agent():
-    agent_script = (
-        Path(__file__).parent
-        / "unit_test_generator_agent"
-        / "generator_agent_9000.py"
-    )
-    process = subprocess.Popen([sys.executable, str(agent_script), "--port=9010"])
+    yield from start_mock_agent(agent_dir="unit_test_generator_agent", agent_file="generator_agent_9000.py", port=9010)
 
-    try:
-        deadline = time.monotonic() + 10
-        while time.monotonic() < deadline:
-            if process.poll() is not None:
-                raise RuntimeError("Agent server exited before becoming ready")
-            try:
-                with socket.create_connection(("127.0.0.1", 9010), timeout=0.2):
-                    break
-            except OSError:
-                time.sleep(0.1)
-        else:
-            raise RuntimeError("Agent server did not become ready on port 9000")
-
-        yield
-    finally:
-        process.terminate()
-        process.wait(timeout=5)
 
 async def test_minimal_generation_workflow_runs(start_mock_generator_agent):
     file = (Path(__file__).parent / "minimal_generation_workflow.yaml")
