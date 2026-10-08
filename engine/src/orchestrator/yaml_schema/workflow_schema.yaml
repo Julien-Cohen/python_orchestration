@@ -44,6 +44,12 @@ $defs:
       skill:
         title: Skill
         type: string
+      override_repo:
+        anyOf:
+          - type: string
+          - type: "null"
+        default: null
+        title: Override Repo
       nbSpawns:
         title: Nbspawns
         type: integer

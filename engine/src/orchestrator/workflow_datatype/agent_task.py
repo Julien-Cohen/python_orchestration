@@ -46,6 +46,9 @@ class AgentTaskConfig(BaseModel):
     skill : str
     """The skill the agent should have. Passed to the MOSAICO repository."""
 
+    override_repo : str | None = None
+    """If present, skip the request for an agent to the repo, and use this url instead. Example: 'http//:127.0.0.1:9001' . Use it for testing purpose. """
+
     nbSpawns : int
     """Number of parallel workers."""
 
