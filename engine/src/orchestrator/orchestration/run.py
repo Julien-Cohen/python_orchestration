@@ -58,6 +58,16 @@ def join_evaluations (results:list, j:DecisionMode):
 DEFAULT_FUEL = 5
 """Limit to the number of loop repeats to avoid infinite loops."""
 
+
+def isValidated(param):
+    """Interpret the evaluation of an Evaluator agent."""
+    return (
+        param is True
+        or param in ("ok", "valid", "validated")
+        or (isinstance(param, dict) and param.get("accepted") is True)
+    )
+
+
 class Runner:
     """
     Object that contains all the info to orchestrate a workflow.
@@ -135,8 +145,13 @@ class Runner:
         """
         Run loop.body until loop.acceptanceChannel contains true (according to the store).
         """
-        if fuel <= 0 or (store.read(loop.acceptanceChannel) == True):  # v == True instead of v on purpose.
+
+        if fuel <= 0 :
+            return # FIXME : Failure
+
+        elif isValidated(store.read(loop.acceptanceChannel)):
             return
+
         else:
             await self.run_step(loop.body, store)
             await self.run_retry_loop(loop, store, (fuel - 1))
