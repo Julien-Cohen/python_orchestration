@@ -1,4 +1,4 @@
-$schema: "../or_lang_ast/workflow_schema.yaml"
+$schema: "../orchestrator/yaml_schema/workflow_schema.yaml"
 
 type: workflow
 internalChannels:

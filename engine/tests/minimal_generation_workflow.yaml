@@ -1,4 +1,4 @@
-$schema: "../or_lang_ast/workflow_schema.yaml"
+$schema: "../orchestrator/yaml_schema/workflow_schema.yaml"
 
 type: workflow
 internalChannels: []
@@ -13,7 +13,7 @@ body:
   task:
     config:
       skill: Generate something.
-      override_repo: "http://127.0.0.1:9000"
+      override_repo: "http://127.0.0.1:9010"
       nbSpawns: 1
       nbDifferentAgents: 1
       nbRequiredAnswers: 1
