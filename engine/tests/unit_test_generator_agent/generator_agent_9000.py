@@ -40,7 +40,7 @@ MOSAICO_OBSERVABILITY = "https://mosaico-project.eu/extensions/mosaico-observabi
 logger = logging.getLogger(__name__)
 
 
-class SampleAgentExecutor(AgentExecutor):
+class GeneratorAgentExecutor(AgentExecutor):
 
     def __init__(self) -> None:
         self.running_tasks: set[str] = set()
@@ -205,7 +205,7 @@ async def serve(
 
     task_store = InMemoryTaskStore()
     request_handler = DefaultRequestHandler(
-        agent_executor=SampleAgentExecutor(),
+        agent_executor=GeneratorAgentExecutor(),
         task_store=task_store,
         agent_card=agent_card,
     )

@@ -44,7 +44,7 @@ def start_mock_evaluator_agent():
         / "unit_test_evaluator_agent"
         / "evaluator_agent_9000.py"
     )
-    process = subprocess.Popen([sys.executable, str(agent_script), "--port=9020"])
+    process = subprocess.Popen([sys.executable, str(agent_script), "--port=9020", "--mock-string=ko"])
 
     try:
         deadline = time.monotonic() + 10
@@ -73,4 +73,4 @@ async def test_minimal_evaluation_workflow_runs(start_mock_generator_agent, star
     result_store = await Runner(None).run_workflow(workflow, ["hello"])
 
     assert result_store.read("generated")=="mock generated text :-*"
-    assert result_store.read("correctness")=="ok"
+    assert result_store.read("correctness")=="ko"

@@ -40,10 +40,11 @@ MOSAICO_OBSERVABILITY = "https://mosaico-project.eu/extensions/mosaico-observabi
 logger = logging.getLogger(__name__)
 
 
-class SampleAgentExecutor(AgentExecutor):
+class EvaluatorAgentExecutor(AgentExecutor):
 
-    def __init__(self) -> None:
+    def __init__(self, mock_string) -> None:
         self.running_tasks: set[str] = set()
+        self.mock_string: str = mock_string
 
     async def cancel(
         self, context: RequestContext, event_queue: EventQueue
@@ -121,7 +122,7 @@ class SampleAgentExecutor(AgentExecutor):
         evaluation_artifact = Artifact(
             artifact_id=str(uuid.uuid4()),
             name='evaluation',
-            parts=[new_text_part('ok')]
+            parts=[new_text_part(self.mock_string)]
         )
         await event_queue.enqueue_event(TaskArtifactUpdateEvent(
             context_id=task.context_id,
@@ -139,11 +140,12 @@ class SampleAgentExecutor(AgentExecutor):
 
 
 async def serve(
+        mock_string: str,
         bind_host = '0.0.0.0',
-    host: str = '127.0.0.1',
-    port: int = 9000,
-    grpc_port: int = 50081,
-    compat_grpc_port: int = 50082,
+        host: str = '127.0.0.1',
+        port: int = 9000,
+        grpc_port: int = 50081,
+        compat_grpc_port: int = 50082,
 ) -> None:
     """Run the Mock Evaluator Agent server with mounted JSON-RPC, HTTP+JSON and gRPC transports."""
     agent_card = AgentCard(
@@ -205,7 +207,7 @@ async def serve(
 
     task_store = InMemoryTaskStore()
     request_handler = DefaultRequestHandler(
-        agent_executor=SampleAgentExecutor(),
+        agent_executor=EvaluatorAgentExecutor(mock_string),
         task_store=task_store,
         agent_card=agent_card,
     )
@@ -265,8 +267,9 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Mock Evaluator A2A agent server')
     parser.add_argument('--host', default='127.0.0.1')
     parser.add_argument('--port', type=int, default=9000)
-    parser.add_argument('--grpc-port', type=int, default=50071)
-    parser.add_argument('--compat-grpc-port', type=int, default=50072)
+    parser.add_argument('--grpc-port', type=int, default=50081)
+    parser.add_argument('--compat-grpc-port', type=int, default=50082)
+    parser.add_argument('--mock-string', default="ok")
     args = parser.parse_args()
     with contextlib.suppress(KeyboardInterrupt):
         asyncio.run(
@@ -275,5 +278,6 @@ if __name__ == '__main__':
                 port=args.port,
                 grpc_port=args.grpc_port,
                 compat_grpc_port=args.compat_grpc_port,
+                mock_string = args.mock_string
             )
         )
