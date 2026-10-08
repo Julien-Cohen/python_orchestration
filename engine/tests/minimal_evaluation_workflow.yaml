@@ -1,0 +1,64 @@
+$schema: "../orchestrator/yaml_schema/workflow_schema.yaml"
+
+type: workflow
+inputChannels:
+  - type: input-channel-declaration
+    name: spec
+    structure: Atom
+    init_with_part: "spec"
+internalChannels:
+  - type: channel-declaration
+    name: generated
+    structure: Atom
+    init_with_value: "empty"
+  - type: channel-declaration
+    name: correctness
+    structure: Atom
+    init_with_value: "False"
+outputChannels: []
+body:
+  type: sequence
+  step1:
+    type: generation-step
+    task:
+      config:
+        skill: Generate something.
+        override_repo: "http://127.0.0.1:9010"
+        nbSpawns: 1
+        nbDifferentAgents: 1
+        nbRequiredAnswers: 1
+        agentTimeout: 30000
+        onAgentFailure: RetryOther
+        onAgentRejection: NoRetry
+        maxEffort: 1000
+        maxRetry: 2
+      solutionJoin: First
+      inputChannels:
+        - spec
+      feedbackChannels: []
+      outputChannels:
+        - generated
+  step2:
+    type: evaluation-step
+    task:
+      config:
+        skill: Generate something.
+        override_repo: "http://127.0.0.1:9020"
+        nbSpawns: 1
+        nbDifferentAgents: 1
+        nbRequiredAnswers: 1
+        agentTimeout: 30000
+        onAgentFailure: RetryOther
+        onAgentRejection: NoRetry
+        maxEffort: 1000
+        maxRetry: 2
+      consensusType: Majority
+      outputKind: Boolean
+      specificationChannels:
+        - spec
+      solutionChannels:
+        - generated
+
+      # FIXME : how to specify no explanation channel ?
+      explanationChannel: correctness
+      evaluationChannel: correctness

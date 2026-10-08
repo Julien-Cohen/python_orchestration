@@ -1,12 +1,16 @@
 $schema: "../orchestrator/yaml_schema/workflow_schema.yaml"
 
 type: workflow
-internalChannels: []
-inputChannels:
-  - type: input-channel-declaration
+internalChannels:
+  - type: channel-declaration
     name: final-result
     structure: Atom
-    init_with_part: "no-value"
+    init_with_value: "no-value"
+inputChannels:
+  - type: input-channel-declaration
+    name: spec
+    structure: Atom
+    init_with_part: "spec"
 outputChannels: []
 body:
   type: generation-step
@@ -23,7 +27,8 @@ body:
       maxEffort: 1000
       maxRetry: 2
     solutionJoin: First
-    inputChannels: []
+    inputChannels:
+      - spec
     feedbackChannels: []
     outputChannels:
       - final-result
