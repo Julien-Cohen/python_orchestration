@@ -36,6 +36,8 @@ uv run send_request.py
 You will be then placed in a prompting loop: type the message and press Enter.
 You can exit the loop by entering  `exit`.
 
+Depending on the orchestration you are running, ensure the other agents are online before running this test. 
+
 # Build the Docker image
 
 Run this command from the `orchestrator-agent` directory. The parent directory

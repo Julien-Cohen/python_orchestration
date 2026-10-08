@@ -74,3 +74,14 @@ async def test_minimal_evaluation_workflow_runs(start_mock_generator_agent, star
 
     assert result_store.read("generated")=="mock generated text :-*"
     assert result_store.read("correctness")=="ko"
+
+async def test_minimal_retry_workflow_runs(start_mock_generator_agent, start_mock_evaluator_agent):
+    file = (Path(__file__).parent / "minimal_retry_workflow.yaml")
+    data = yaml.safe_load(file.read_text())
+
+    workflow = Workflow.model_validate(data)
+
+    result_store = await Runner(None).run_workflow(workflow, ["hello"])
+
+    assert result_store.read("generated")=="mock generated text :-*"
+    assert result_store.read("correctness")=="ko"
