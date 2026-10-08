@@ -165,7 +165,10 @@ class Runner:
         """
         Run loop.body until loop.stopChannel contains true (according to the store).
         """
-        if fuel <= 0 or (store.read(loop.stopChannel) == True) : # v == True instead of v on purpose.
+        if fuel <= 0:
+            return  # FIXME : Failure
+
+        elif isValidated(store.read(loop.stopChannel)):
             return
         else:
             await self.run_step(loop.body, store)
