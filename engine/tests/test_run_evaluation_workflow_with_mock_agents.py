@@ -3,7 +3,7 @@ from pathlib import Path
 import pytest
 import yaml
 
-from orchestrator.orchestration.run import Runner
+from orchestrator.orchestration.run import Failure, Runner
 from orchestrator.workflow_datatype.workflows import Workflow
 from mock_tools import start_mock_agent
 
@@ -49,7 +49,5 @@ async def test_minimal_retry_workflow_runs_b(start_mock_generator_agent, start_m
 
     workflow = Workflow.model_validate(data)
 
-    result_store = await Runner(None).run_workflow(workflow, ["hello"])
-
-    assert result_store.read("generated")=="mock generated text :-*"
-    assert result_store.read("correctness")=="ko"
+    with pytest.raises(Failure):
+        await Runner(None).run_workflow(workflow, ["hello"])

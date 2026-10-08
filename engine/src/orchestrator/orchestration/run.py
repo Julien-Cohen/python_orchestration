@@ -59,6 +59,10 @@ DEFAULT_FUEL = 5
 """Limit to the number of loop repeats to avoid infinite loops."""
 
 
+class Failure(Exception):
+    pass
+
+
 def isValidated(param):
     """Interpret the evaluation of an Evaluator agent."""
     return (
@@ -147,7 +151,7 @@ class Runner:
         """
 
         if fuel <= 0 :
-            return # FIXME : Failure
+            raise Failure()
 
         elif isValidated(store.read(loop.acceptanceChannel)):
             return
@@ -166,7 +170,7 @@ class Runner:
         Run loop.body until loop.stopChannel contains true (according to the store).
         """
         if fuel <= 0:
-            return  # FIXME : Failure
+            return  # We don't fail here, as opposed to the retry loop.
 
         elif isValidated(store.read(loop.stopChannel)):
             return
@@ -218,4 +222,3 @@ class Runner:
 
         await self.run_step(workflow.body, store)
         return store
-
