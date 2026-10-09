@@ -3,7 +3,7 @@ from pathlib import Path
 import pytest
 import yaml
 
-from orchestrator.orchestration.run import Failure, Runner
+from orchestrator.orchestration.run import OutOfFuel, Runner
 from orchestrator.workflow_datatype.workflows import Workflow
 from mock_tools import start_mock_agent
 
@@ -49,5 +49,5 @@ async def test_minimal_retry_workflow_runs_b(start_mock_generator_agent, start_m
 
     workflow = Workflow.model_validate(data)
 
-    with pytest.raises(Failure):
+    with pytest.raises(OutOfFuel):
         await Runner(None).run_workflow(workflow, ["hello"])

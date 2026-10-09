@@ -59,7 +59,7 @@ DEFAULT_FUEL = 5
 """Limit to the number of loop repeats to avoid infinite loops."""
 
 
-class Failure(Exception):
+class OutOfFuel(Exception):
     pass
 
 
@@ -165,7 +165,7 @@ class Runner:
 
         if fuel <= 0 :
             print("[ERROR] Retry loop burnt all its fuel.")
-            raise Failure()
+            raise OutOfFuel()
 
         elif isValidated(store.read(loop.acceptanceChannel)):
             print("End retry loop.")

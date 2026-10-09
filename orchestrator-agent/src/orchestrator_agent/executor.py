@@ -13,7 +13,7 @@ from mosaico.base.observability import MosaicoObservabilityMetadata
 
 import logging
 
-from orchestrator.orchestration.run import Runner
+from orchestrator.orchestration.run import Runner, OutOfFuel
 from orchestrator.workflow_datatype.workflows import Workflow
 from orchestrator.yaml_schema import read_yaml_workflow
 
@@ -104,9 +104,14 @@ class OrchestrationExecutor(MosaicoAgentExecutor):
                 await updater.complete()
                 return
 
+            except OutOfFuel:
+                logger.error("Failed to run orchestration : out of fuel.")
+                await updater.failed(agent_msg('Failed to run orchestration : out of fuel.'))
+                return
+
             except (BaseException) as _: # Fixme : sort kinds of failure to yield a better error message.
-                logger.error("failed to run orchestration")
-                await updater.failed(agent_msg('Failed to run orchestration.'))
+                logger.error("failed to run orchestration (other reason)")
+                await updater.failed(agent_msg('Failed to run orchestration (other reason).'))
                 return
 
     @override
