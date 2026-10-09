@@ -90,10 +90,14 @@ class Runner:
         config = task.config
         agents = self.repo.requestSolutionAgent(config)
         consolidated_agents = _resize_list(agents, config.nbSpawns)
+
         message_content = []
-        message_content.append (config.skill)
-        for i in task.inputChannels + task.feedbackChannels:
-            message_content.append(store.store[i])
+        message_content.append(("prompt", config.skill))
+        for n in task.inputChannels:
+            message_content.append(("specification", store.store[n]))
+        for n in task.feedbackChannels:
+            message_content.append(("explanation", store.store[n]))
+
 
         accu = [] # result accumulator
 
@@ -123,9 +127,11 @@ class Runner:
         agents = self.repo.requestEvaluationAgent(config)
         consolidated_agents = _resize_list(agents, config.nbSpawns)
         message_content = []
-        message_content.append(config.skill)
-        for i in task.specificationChannels + task.solutionChannels:
-            message_content.append(store.store[i])
+        message_content.append(("prompt", config.skill))
+        for n in task.specificationChannels:
+            message_content.append(("specification",store.store[n]))
+        for n in task.solutionChannels:
+            message_content.append(("solution",store.store[n]))
 
         accu = []  # result accumulator
 

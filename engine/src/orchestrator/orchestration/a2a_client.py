@@ -7,8 +7,7 @@ import grpc
 import httpx
 
 from a2a.client import A2ACardResolver, ClientConfig, create_client
-from a2a.helpers import get_artifact_text, get_message_text
-from a2a.helpers.agent_card import display_agent_card
+from a2a.helpers import get_message_text
 from a2a.types import Message, Part, Role, SendMessageRequest, TaskState
 from google.protobuf.json_format import MessageToDict
 
@@ -88,8 +87,19 @@ async def _handle_stream(
 
     return current_task_id
 
+def part_of_parameter ( p: tuple[str, str] ):
+    (k,c) = p
+    if k == "prompt" or k == "specification" or k == "explanation" :
+        return Part(text=c)
+    elif k == "solution":
+        return Part(
+            raw=c.encode("utf-8"),
+            media_type="text/plain",
+            filename=k,)
+    else:
+        raise ValueError(f"Unknown parameter kind: {k}")
 
-async def connect_and_send(target_url, parameters:list[str], accu) -> None:
+async def connect_and_send(target_url, parameters:list[tuple[str, str]], accu) -> None:
     """Run an A2A client."""
 
     config = ClientConfig( grpc_channel_factory=grpc.aio.insecure_channel )
@@ -112,8 +122,7 @@ async def connect_and_send(target_url, parameters:list[str], accu) -> None:
     current_task_id = None
     current_context_id = str(uuid.uuid4())
 
-    parts = [Part(text=p) for p in parameters] # FIXME :does not work with emfatic syntax checker
-    #parts = [Part(text="\n ".join(parameters))] # Only one part for emfatic syntactic supervisor (does not work either)
+    parts = [part_of_parameter(p) for p in parameters]
 
     message = Message(
         role=Role.ROLE_USER,
