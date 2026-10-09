@@ -43,13 +43,11 @@ class OrchestrationExecutor(MosaicoAgentExecutor):
         task_id = context.task_id
         context_id = context.context_id
 
-        task = context.current_task
-
-        if not user_message or not task_id or not context_id:
-            logger.info(
-                '[Mock Generator Agent] Abort',
-            )
+        if not task_id or not context_id:
+            logger.info('[Orchestration] Abort',)
             return
+
+        task = context.current_task
 
 
         self.running_tasks.add(task_id)
@@ -70,7 +68,17 @@ class OrchestrationExecutor(MosaicoAgentExecutor):
             context_id=context_id,
         )
 
+        def agent_msg(text: str):
+            return updater.new_agent_message(parts=[new_text_part(text)])
+
+        if not user_message :
+            logger.info('[Orchestration] Abort',)
+            await updater.reject(agent_msg("No message provided."))
+            return
+
+
         async def push(text:str):
+            """This is a callback definition."""
             await updater.add_artifact(
                 parts=[new_text_part(text)],
                 name='solution',
@@ -78,9 +86,11 @@ class OrchestrationExecutor(MosaicoAgentExecutor):
             )
 
         if len(context.message.parts) != 1:
-            await self.send_text_message(context, event_queue, 'Message did not have exactly one part')
+            await updater.reject(agent_msg('Message did not have exactly one part'))
+            return
         elif not context.message.parts[0].HasField('text'):
-            await self.send_text_message(context, event_queue, 'Agent expected a TextPart')
+            await updater.reject(agent_msg('Agent expected a TextPart'))
+            return
         else:
 
             prompt = context.message.parts[0].text
@@ -92,10 +102,12 @@ class OrchestrationExecutor(MosaicoAgentExecutor):
                 get_client().update_current_span(output={"solution": result}) # langfuse
 
                 await updater.complete()
+                return
 
-            except (ValueError, TypeError, SyntaxError) as _:
-                logger.exception("failed to evaluate expression")
-                await self.send_text_message(context, event_queue, 'Failed to evaluate expression')
+            except (BaseException) as _: # Fixme : sort kinds of failure to yield a better error message.
+                logger.error("failed to run orchestration")
+                await updater.failed(agent_msg('Failed to run orchestration.'))
+                return
 
     @override
     async def health(self) -> str:
