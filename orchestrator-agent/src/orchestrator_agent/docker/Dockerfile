@@ -13,6 +13,7 @@ RUN apt-get update \
 
 COPY orchestrator-agent/pyproject.toml orchestrator-agent/uv.lock orchestrator-agent/README.md ./
 COPY orchestrator-agent/src/ ./src/
+COPY orchestrator-agent/default_workflows/ ./default_workflows/
 COPY engine/pyproject.toml /engine/pyproject.toml
 COPY engine/src/ /engine/src/
 
@@ -22,5 +23,7 @@ RUN pip install --no-cache-dir uv \
 COPY orchestrator-agent/src/orchestrator_agent/docker/entrypoint.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh
 
+EXPOSE 9000
+
 ENTRYPOINT ["/entrypoint.sh"]
-CMD ["uv", "run", "orchestrator-agent"]
+CMD ["uv", "run", "orchestrator-agent", "default_workflows/example_generation_workflow.yaml"]
