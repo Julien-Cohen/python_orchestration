@@ -52,8 +52,14 @@ Run this command from the `orchestrator-agent` directory. The parent directory
 is used as the build context so Docker can access both this project and the
 sibling `engine` project:
 
+Simple test orchestrator:
 ```bash
   docker build -f src/orchestrator_agent/docker/Dockerfile -t test-orchestrator-agent:latest ..
+```
+
+Mosaico demonstrator Emfatic orchestrator:
+```bash
+  docker build -f src/orchestrator_agent/docker/Dockerfile.mosaico-demonstrator-emfatic-orchestration -t emfatic-orchestrator-agent:latest ..
 ```
 
 ## Run the agent image in a container

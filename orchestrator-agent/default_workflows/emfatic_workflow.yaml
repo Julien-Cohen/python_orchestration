@@ -1,0 +1,109 @@
+$schema: ../../or_lang_ast/workflow_schema.yaml
+
+type: workflow
+inputChannels:
+  - type: input-channel-declaration
+    name : specification
+    structure: Atom
+    init_with_part : "spec"
+internalChannels:
+  - type: channel-declaration
+    name : syntactic-correctness
+    structure: Atom
+    init_with_value : "false"
+  - type: channel-declaration
+    name: syntactic-errors
+    structure: Atom
+    init_with_value: "empty"
+  - type: channel-declaration
+    name : semantic-correctness
+    structure: Atom
+    init_with_value : "false"
+  - type: channel-declaration
+    name: semantic-feedback
+    structure: Atom
+    init_with_value: "empty"
+outputChannels:
+  - type: channel-declaration
+    name : meta-model
+    structure: Atom
+    init_with_value : "empty"
+body:
+  type: retry-loop
+  body:
+    type : sequence
+    step1:
+      # generate a syntactically valid meta-model.
+      type: retry-loop
+      body:
+        type: sequence
+        step1:
+          # meta-model generation
+          type: generation-step
+          task:
+            config:
+              skill: Generate Emfatic meta-models from natural language specification.
+              override_repo: "http://emfatic-generator-smolagents:9000"
+              nbSpawns: 1
+              nbDifferentAgents: 1
+              nbRequiredAnswers: 1
+              agentTimeout: 30000
+              onAgentFailure: RetryOther
+              onAgentRejection: NoRetry
+              maxEffort: 1000
+              maxRetry: 2
+            solutionJoin: First
+            inputChannels:
+              - specification
+            feedbackChannels:
+              - syntactic-errors
+              - semantic-feedback
+            outputChannels:
+              - meta-model
+        step2:
+          # syntactic validation
+          type: evaluation-step
+          task:
+            config:
+              skill: Check syntactically an emfatic meta model.
+              override_repo: "http://emfatic-syntactic-supervisor:9000"
+              nbSpawns: 1
+              nbDifferentAgents: 1
+              nbRequiredAnswers: 1
+              agentTimeout: 30000
+              onAgentFailure: RetryOther
+              onAgentRejection: NoRetry
+              maxEffort: 500
+              maxRetry: 1
+            consensusType: Majority
+            outputKind: Boolean
+            specificationChannels: []
+            solutionChannels:
+            - meta-model
+            evaluationChannel: syntactic-correctness
+            explanationChannel: syntactic-errors
+      acceptanceChannel: syntactic-correctness
+    step2:
+      # semantic validation
+      type : evaluation-step
+      task:
+        config:
+          skill: Check semantically an emfatic meta model compared to a specification.
+          override_repo: "http://emfatic-semantic-supervisor:9000"
+          nbSpawns: 3
+          nbDifferentAgents: 1
+          nbRequiredAnswers: 2
+          agentTimeout: 30000
+          onAgentFailure: RetryOther
+          onAgentRejection: NoRetry
+          maxEffort: 500
+          maxRetry: 1
+        consensusType: Majority
+        outputKind: Boolean
+        specificationChannels:
+        - specification
+        solutionChannels:
+        - meta-model
+        evaluationChannel: semantic-correctness
+        explanationChannel: semantic-feedback
+  acceptanceChannel: semantic-correctness
