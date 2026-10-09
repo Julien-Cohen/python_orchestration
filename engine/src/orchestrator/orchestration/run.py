@@ -65,11 +65,13 @@ class Failure(Exception):
 
 def isValidated(param):
     """Interpret the evaluation of an Evaluator agent."""
-    return (
-        param is True
-        or param in ("ok", "valid", "validated")
-        or (isinstance(param, dict) and param.get("accepted") is True)
-    )
+    result = param is True or param in ("ok", "valid", "validated") or (
+                isinstance(param, dict) and param.get("accepted") is True)
+    if not result:
+        print('[LOG] ' + str(param) + " evaluated as rejection.")
+    else:
+        print('[LOG] ' + str(param) + " evaluated as validation.")
+    return result
 
 
 class Runner:
@@ -108,9 +110,11 @@ class Runner:
             (artifact_name,v) = join_results(accu, task.solutionJoin)
             if artifact_name == "solution" :
                 store.write( task.outputChannels[0], v) # FIXME: how to choose between multiple output channels?
+                print("Generation task finished.")
             else:
                 print("FIXME: unrecognized write channel.")
         else:
+            print("No output produced for this generation task")
             raise RuntimeError("No output produced for this generation task")
 
 
@@ -135,12 +139,15 @@ class Runner:
                 print("Agent failed or canceled:", url, r)
 
         if len(accu) > 0:
+            print("ACCU: " + repr(accu))
             (artifact_name, v) = join_evaluations(accu, task.consensusType)
             if artifact_name == "evaluation":
                 store.write(task.evaluationChannel, v)  # FIXME: also write explanations in explanationChannel
+                print("Evaluation task finished.")
             else:
                 print("FIXME: unrecognized write channel.")
         else:
+            print("No output produced for this evaluation task")
             raise RuntimeError("No output produced for this evaluation task")
 
         # TODO : mock evaluation agent and unit test for evaluation task
@@ -151,18 +158,20 @@ class Runner:
         """
 
         if fuel <= 0 :
+            print("[ERROR] Retry loop burnt all its fuel.")
             raise Failure()
 
         elif isValidated(store.read(loop.acceptanceChannel)):
+            print("End retry loop.")
             return
 
         else:
+            print("Retry.")
             await self.run_step(loop.body, store)
             await self.run_retry_loop(loop, store, (fuel - 1))
 
-        # TODO : what's the difference between retry-loop and accumulate-loop ?
         # TODO : add the fuel in the config of the loop (in the yaml file)
-        # TODO : unit tests for retry-loop
+
 
 
     async def run_accumulate_loop(self, loop:AccumulateLoop, store:Store, fuel:int):
@@ -170,11 +179,14 @@ class Runner:
         Run loop.body until loop.stopChannel contains true (according to the store).
         """
         if fuel <= 0:
+            print("[WARNING] Accumulate loop burnt all its fuel.")
             return  # We don't fail here, as opposed to the retry loop.
 
         elif isValidated(store.read(loop.stopChannel)):
+            print("End accumulate loop.")
             return
         else:
+            print("Iterate.")
             await self.run_step(loop.body, store)
             await self.run_accumulate_loop(loop, store, (fuel-1))
 
