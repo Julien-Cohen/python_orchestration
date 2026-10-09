@@ -65,12 +65,13 @@ class OutOfFuel(Exception):
 
 def isValidated(param):
     """Interpret the evaluation of an Evaluator agent."""
-    result = param is True or param in ("ok", "valid", "validated") or (
-                isinstance(param, dict) and param.get("accepted") is True)
+    result = (param is True or param in ("ok", "valid", "validated")
+              or (isinstance(param, dict) and param.get("accepted") is True)
+                or (("accepted" in param) and ("true" in param)) ) # FIXME
     if not result:
-        print('[LOG] ' + str(param) + " evaluated as rejection.")
+        print('[LOG] ' + str(param) + " evaluated as rejection. " + str(type(param)))
     else:
-        print('[LOG] ' + str(param) + " evaluated as validation.")
+        print('[LOG] ' + str(param) + " evaluated as validation. " + str(type(param)))
     return result
 
 
