@@ -102,7 +102,11 @@ def part_of_parameter ( p: tuple[str, str] ):
 async def connect_and_send(target_url, parameters:list[tuple[str, str]], accu) -> None:
     """Run an A2A client."""
 
-    config = ClientConfig( grpc_channel_factory=grpc.aio.insecure_channel )
+    httpx_client = httpx.AsyncClient(timeout=60.0) # fixme: use the specified timeout here
+    config = ClientConfig(
+        grpc_channel_factory=grpc.aio.insecure_channel,
+        httpx_client=httpx_client,
+    )
 
     print( f'Connecting to {target_url}.' )
 
