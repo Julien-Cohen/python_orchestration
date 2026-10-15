@@ -100,10 +100,12 @@ def part_of_parameter ( p: tuple[str, str] ):
     else:
         raise ValueError(f"Unknown parameter kind: {k}")
 
-async def connect_and_send(target_url, parameters:list[tuple[str, str]], accu, observability_metadata: Optional[MosaicoObservabilityMetadata] = None) -> None:
-    """Run an A2A client."""
+async def connect_and_send(target_url, parameters:list[tuple[str, str]], accu, timeout, observability_metadata: Optional[MosaicoObservabilityMetadata] = None) -> None:
+    """Run an A2A client.
+    :param timeout: given in seconds.
+    """
 
-    httpx_client = httpx.AsyncClient(timeout=60.0) # fixme: use the specified timeout here
+    httpx_client = httpx.AsyncClient(timeout=timeout) # fixme: use the specified timeout here
     config = ClientConfig(
         grpc_channel_factory=grpc.aio.insecure_channel,
         httpx_client=httpx_client,

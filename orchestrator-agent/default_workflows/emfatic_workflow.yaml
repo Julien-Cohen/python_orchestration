@@ -53,7 +53,7 @@ body:
                 nbSpawns: 1
                 nbDifferentAgents: 1
                 nbRequiredAnswers: 1
-                agentTimeout: 30000
+                agentTimeout: 60
                 onAgentFailure: RetryOther
                 onAgentRejection: NoRetry
                 maxEffort: 1000
@@ -77,7 +77,7 @@ body:
                 nbSpawns: 1
                 nbDifferentAgents: 1
                 nbRequiredAnswers: 1
-                agentTimeout: 30000
+                agentTimeout: 60
                 onAgentFailure: RetryOther
                 onAgentRejection: NoRetry
                 maxEffort: 500
@@ -100,7 +100,7 @@ body:
             nbSpawns: 2
             nbDifferentAgents: 1
             nbRequiredAnswers: 2
-            agentTimeout: 30000
+            agentTimeout: 60
             onAgentFailure: RetryOther
             onAgentRejection: NoRetry
             maxEffort: 500

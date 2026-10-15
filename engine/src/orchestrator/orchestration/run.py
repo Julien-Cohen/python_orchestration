@@ -121,7 +121,7 @@ class Runner:
         obs_metadata = self.new_observability_metadata()
 
         results = await asyncio.gather(
-            *(connect_and_send(url, message_content, accu, obs_metadata) for url in consolidated_agents),
+            *(connect_and_send(url, message_content, accu, task.config.agentTimeout, obs_metadata) for url in consolidated_agents),
             return_exceptions=True,
         )
 
@@ -159,7 +159,7 @@ class Runner:
 
         # Send message
         results = await asyncio.gather(
-            *(connect_and_send(url, message_content, accu, obs_metadata) for url in consolidated_agents),
+            *(connect_and_send(url, message_content, accu, task.config.agentTimeout, obs_metadata) for url in consolidated_agents),
             return_exceptions=True,
         )
 
@@ -185,8 +185,6 @@ class Runner:
         """
         Run loop.body until loop.acceptanceChannel contains true (according to the store).
         """
-
-
 
         if isValidated(store.read(loop.acceptanceChannel)):
             print("End retry loop (success).")
