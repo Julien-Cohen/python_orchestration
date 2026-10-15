@@ -186,13 +186,15 @@ class Runner:
         Run loop.body until loop.acceptanceChannel contains true (according to the store).
         """
 
-        if fuel <= 0 :
+
+
+        if isValidated(store.read(loop.acceptanceChannel)):
+            print("End retry loop (success).")
+            return
+
+        elif fuel <= 0 :
             print("[ERROR] Retry loop burnt all its fuel.")
             raise OutOfFuel()
-
-        elif isValidated(store.read(loop.acceptanceChannel)):
-            print("End retry loop.")
-            return
 
         else:
             print("Retry.")
@@ -207,13 +209,16 @@ class Runner:
         """
         Run loop.body until loop.stopChannel contains true (according to the store).
         """
-        if fuel <= 0:
+
+
+        if isValidated(store.read(loop.stopChannel)):
+            print("End accumulate loop (success).")
+            return
+
+        elif fuel <= 0:
             print("[WARNING] Accumulate loop burnt all its fuel.")
             return  # We don't fail here, as opposed to the retry loop.
 
-        elif isValidated(store.read(loop.stopChannel)):
-            print("End accumulate loop.")
-            return
         else:
             print("Iterate.")
             await self.run_step(loop.body, store)
