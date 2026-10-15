@@ -1,4 +1,5 @@
 import asyncio
+from typing import Optional
 
 from orchestrator.orchestration.a2a_client import connect_and_send
 from orchestrator.orchestration.agent_repository import AgentRepository
@@ -9,6 +10,7 @@ from orchestrator.workflow_datatype.join import SolutionJoin, DecisionMode
 from orchestrator.workflow_datatype.workflows import Workflow, Step, Sequence, AlgorithmicStep, GenerationStep, \
     EvaluationStep, RetryUntilValidated, AccumulateLoop, ParallelBuild, ParallelEvaluation, ReplyStep
 
+from mosaico.base.observability import MosaicoObservabilityMetadata
 
 def _resize_list(l: list, n: int):
     """
@@ -55,7 +57,7 @@ def join_evaluations (results:list, j:DecisionMode):
         case DecisionMode.DEBATE:
             raise ValueError("FIXME : Debate not implemented yet.") # fixme
 
-DEFAULT_FUEL = 5
+DEFAULT_FUEL = 2
 """Limit to the number of loop repeats to avoid infinite loops."""
 
 
@@ -80,14 +82,29 @@ class Runner:
     Object that contains all the info to orchestrate a workflow.
     """
 
-    def __init__(self, push_artifact_callback):
+
+    def __init__(self, push_artifact_callback, metadata : Optional[MosaicoObservabilityMetadata] = None):
+        """Initialize the orchestration runner.
+
+        Parameters:
+            push_artifact_callback: Callback used to send workflow artifacts back
+                to the caller. It is invoked by ``run_reply_to_client`` when a
+                reply step needs to emit one or more channel values.
+            metadata: Mosaico metadata, if any.
+
+        The runner stores a reference to an AgentRepository to resolve the agents
+        needed for generation and evaluation tasks, the callback to
+        stream produced artifacts to the external client, and the metadata for propagate to subtasks.
+        """
         self.repo = AgentRepository()
         self.push_artifact = push_artifact_callback
+        self.metadata= metadata
 
     async def run_algorithmic_task(self, task : AlgorithmicTaskConfig, store:Store):
         print(task.statement.log) # fixme
 
     async def run_generation_task(self, task: GenerationConfig, store:Store):
+        print("[LOG] Starting generation task.")
         config = task.config
         agents = self.repo.requestSolutionAgent(config)
         consolidated_agents = _resize_list(agents, config.nbSpawns)
@@ -103,7 +120,7 @@ class Runner:
         accu = [] # result accumulator
 
         results = await asyncio.gather(
-            *(connect_and_send(url, message_content, accu) for url in consolidated_agents),
+            *(connect_and_send(url, message_content, accu, self.metadata) for url in consolidated_agents),
             return_exceptions=True,
         )
 
@@ -137,7 +154,7 @@ class Runner:
         accu = []  # result accumulator
 
         results = await asyncio.gather(
-            *(connect_and_send(url, message_content, accu) for url in consolidated_agents),
+            *(connect_and_send(url, message_content, accu, self.metadata) for url in consolidated_agents),
             return_exceptions=True,
         )
 

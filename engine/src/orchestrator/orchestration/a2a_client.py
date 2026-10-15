@@ -1,7 +1,7 @@
 import json
 import uuid
 
-from typing import Any
+from typing import Any, Optional
 
 import grpc
 import httpx
@@ -10,6 +10,7 @@ from a2a.client import A2ACardResolver, ClientConfig, create_client
 from a2a.helpers import get_message_text
 from a2a.types import Message, Part, Role, SendMessageRequest, TaskState
 from google.protobuf.json_format import MessageToDict
+from mosaico.base.observability import MosaicoObservabilityMetadata
 
 
 async def _handle_stream(
@@ -99,7 +100,7 @@ def part_of_parameter ( p: tuple[str, str] ):
     else:
         raise ValueError(f"Unknown parameter kind: {k}")
 
-async def connect_and_send(target_url, parameters:list[tuple[str, str]], accu) -> None:
+async def connect_and_send(target_url, parameters:list[tuple[str, str]], accu, observability_metadata: Optional[MosaicoObservabilityMetadata] = None) -> None:
     """Run an A2A client."""
 
     httpx_client = httpx.AsyncClient(timeout=60.0) # fixme: use the specified timeout here
@@ -136,7 +137,18 @@ async def connect_and_send(target_url, parameters:list[tuple[str, str]], accu) -
         context_id=current_context_id,
     )
 
-    request = SendMessageRequest(message=message)
+    request_kwargs = {"message": message}
+
+    if observability_metadata:
+        from google.protobuf import struct_pb2
+        meta = struct_pb2.Struct()
+        meta.update(observability_metadata)
+        request_kwargs["metadata"] = meta
+        print ("[LOG] Observability Metadata inserted:", str(meta))
+    else:
+        print("[WARNING] No Observability Metadata.")
+
+    request = SendMessageRequest(**request_kwargs)
 
     try:
         stream = client.send_message(request)

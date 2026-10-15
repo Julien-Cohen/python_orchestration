@@ -35,11 +35,13 @@ body:
     body:
       type : sequence
       step1:
+
         # generate a syntactically valid meta-model.
         type: retry-loop
         body:
           type: sequence
           step1:
+
             # meta-model generation
             type: generation-step
             task:
@@ -63,6 +65,7 @@ body:
               outputChannels:
                 - meta-model
           step2:
+
             # syntactic validation
             type: evaluation-step
             task:
@@ -90,9 +93,9 @@ body:
         type : evaluation-step
         task:
           config:
-            skill: Check semantically an emfatic meta model compared to a specification.
+            skill: Check semantically an Emfatic meta model compared to a specification.
             override_repo: "http://emfatic-semantic-supervisor:9000"
-            nbSpawns: 3
+            nbSpawns: 2
             nbDifferentAgents: 1
             nbRequiredAnswers: 2
             agentTimeout: 30000

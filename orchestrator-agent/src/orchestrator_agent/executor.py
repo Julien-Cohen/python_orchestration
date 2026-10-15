@@ -19,8 +19,8 @@ from orchestrator.yaml_schema import read_yaml_workflow
 
 logger = logging.getLogger(__name__)
 
-async def orchestrate(prompt:str, workflow: Workflow, push_artifact_callback):
-    runner = Runner(push_artifact_callback)
+async def orchestrate(prompt:str, workflow: Workflow, push_artifact_callback, observability_metadata):
+    runner = Runner(push_artifact_callback, observability_metadata)
     result_store = await runner.run_workflow(workflow, [prompt])
     return str(result_store)
 
@@ -98,7 +98,7 @@ class OrchestrationExecutor(MosaicoAgentExecutor):
             get_client().update_current_span(input={"prompt": prompt})
             try:
 
-                result = await orchestrate(prompt, self.workflow, push)
+                result = await orchestrate(prompt, self.workflow, push, observability_metadata)
                 get_client().update_current_span(output={"solution": result}) # langfuse
 
                 await updater.complete()
@@ -109,8 +109,8 @@ class OrchestrationExecutor(MosaicoAgentExecutor):
                 await updater.failed(agent_msg('Failed to run orchestration : out of fuel.'))
                 return
 
-            except (BaseException) as _: # Fixme : sort kinds of failure to yield a better error message.
-                logger.error("failed to run orchestration (other reason)")
+            except (BaseException) as e: # Fixme : sort kinds of failure to yield a better error message.
+                logger.error("failed to run orchestration (other reason) " + str(e))
                 await updater.failed(agent_msg('Failed to run orchestration (other reason).'))
                 return
 

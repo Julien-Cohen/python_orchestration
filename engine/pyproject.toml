@@ -8,7 +8,8 @@ dependencies = [
     "a2a-sdk[http-server, grpc]>=1.0.0,<1.1.0",
     "grpcio",
     "uvicorn",
-    "fastapi"
+    "fastapi",
+    "mosaico-base-agent>=0.3.2",
 ]
 
 [build-system]
@@ -24,3 +25,11 @@ test = ["pytest", "pytest-asyncio"]
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 asyncio_mode = "auto"
+
+[[tool.uv.index]]
+name = "mosaico"
+url = "https://gitlab.eclipse.org/api/v4/projects/12942/packages/pypi/simple"
+explicit = true
+
+[tool.uv.sources]
+mosaico-base-agent = { index = "mosaico" }
