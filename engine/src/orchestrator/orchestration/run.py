@@ -1,6 +1,8 @@
 import asyncio
 from typing import Optional
 
+import langfuse
+
 from orchestrator.orchestration.a2a_client import connect_and_send
 from orchestrator.orchestration.agent_repository import AgentRepository
 from orchestrator.workflow_datatype.agent_task import GenerationConfig, EvaluationConfig
@@ -116,8 +118,10 @@ class Runner:
 
         accu = [] # result accumulator
 
+        obs_metadata = self.new_observability_metadata()
+
         results = await asyncio.gather(
-            *(connect_and_send(url, message_content, accu, self.metadata) for url in consolidated_agents),
+            *(connect_and_send(url, message_content, accu, obs_metadata) for url in consolidated_agents),
             return_exceptions=True,
         )
 
@@ -150,8 +154,12 @@ class Runner:
 
         accu = []  # result accumulator
 
+
+        obs_metadata = self.new_observability_metadata()
+
+        # Send message
         results = await asyncio.gather(
-            *(connect_and_send(url, message_content, accu, self.metadata) for url in consolidated_agents),
+            *(connect_and_send(url, message_content, accu, obs_metadata) for url in consolidated_agents),
             return_exceptions=True,
         )
 
@@ -255,3 +263,18 @@ class Runner:
 
         await self.run_step(workflow.body, store)
         return store
+
+    def new_observability_metadata(self):
+        """Generate observability metadata that binds this orchestration task as parent task."""
+        current_trace_id = langfuse.get_client().get_current_trace_id()
+        current_observation_id = langfuse.get_client().get_current_observation_id()
+
+        if self.metadata:
+            obs_metadata: MosaicoObservabilityMetadata = dict(self.metadata)  # fixme :Type problem here
+            if current_trace_id:
+                obs_metadata["mosaico-root-task-id"] = current_trace_id
+            if current_observation_id:
+                obs_metadata["mosaico-super-task-id"] = current_observation_id
+        else:
+            obs_metadata = None
+        return obs_metadata
