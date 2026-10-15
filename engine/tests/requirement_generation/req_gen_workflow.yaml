@@ -56,10 +56,12 @@ outputChannels:
     init_with_value : "[]"
 body:
   type: accumulate-loop
+  fuel: 3
   body:
     type: sequence
     step1:
       type: retry-loop
+      fuel : 3
       body:
         type: sequence
         step1:

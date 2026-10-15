@@ -30,11 +30,13 @@ outputChannels:
     init_with_value : "empty"
 body:
   type: retry-loop
+  fuel: 2
   body:
     type : sequence
     step1:
       # generate a syntactically valid meta-model.
       type: retry-loop
+      fuel: 2
       body:
         type: sequence
         step1:

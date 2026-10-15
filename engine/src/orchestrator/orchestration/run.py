@@ -57,9 +57,6 @@ def join_evaluations (results:list, j:DecisionMode):
         case DecisionMode.DEBATE:
             raise ValueError("FIXME : Debate not implemented yet.") # fixme
 
-DEFAULT_FUEL = 2
-"""Limit to the number of loop repeats to avoid infinite loops."""
-
 
 class OutOfFuel(Exception):
     pass
@@ -235,9 +232,9 @@ class Runner:
             case EvaluationStep():
                 await self.run_evaluation_task(s.task, store)
             case RetryUntilValidated():
-                await self.run_retry_loop(s, store, DEFAULT_FUEL)
+                await self.run_retry_loop(s, store, s.fuel)
             case AccumulateLoop():
-                await self.run_accumulate_loop(s, store, DEFAULT_FUEL)
+                await self.run_accumulate_loop(s, store, s.fuel)
             case ParallelBuild():
                 await self.run_in_parallel(s, store)
             case ParallelEvaluation():

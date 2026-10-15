@@ -32,12 +32,14 @@ body:
   type: sequence
   step1:
     type: retry-loop
+    fuel: 2
     body:
       type : sequence
       step1:
 
         # generate a syntactically valid meta-model.
         type: retry-loop
+        fuel: 2
         body:
           type: sequence
           step1:

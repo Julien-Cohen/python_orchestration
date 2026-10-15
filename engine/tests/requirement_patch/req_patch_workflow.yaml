@@ -37,6 +37,7 @@ body:
   step1:
     # Generate a review of the current requirements.
     type: retry-loop
+    fuel: 2
     body:
       type: sequence
       step1:

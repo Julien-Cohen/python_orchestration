@@ -18,6 +18,7 @@ inputChannels:
 outputChannels: []
 body:
   type: accumulate-loop
+  fuel: 5
   body:
     type: generation-step
     task:

@@ -18,6 +18,7 @@ internalChannels:
 outputChannels: []
 body:
   type: retry-loop
+  fuel: 5
   acceptanceChannel: correctness
   body:
     type: sequence

@@ -30,11 +30,13 @@ class RetryUntilValidated(BaseModel):
     type: Literal["retry-loop"] = "retry-loop"
     body: "Step"
     acceptanceChannel: str
+    fuel: int
 
 class AccumulateLoop(BaseModel):
     type: Literal["accumulate-loop"] = "accumulate-loop"
     body: "Step"
     stopChannel : str
+    fuel: int
 
 class ParallelBuild(BaseModel):
     type: Literal["parallel-build"] = "parallel-build"
