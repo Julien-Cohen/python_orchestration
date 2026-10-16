@@ -33,7 +33,8 @@ def test_req_gen_workflow_loads():
     workflow = Workflow.model_validate(data)
 
     assert workflow.type == "workflow"
-    assert workflow.body.type == "accumulate-loop"
+    assert workflow.body.type == "sequence"
+    assert workflow.body.step1.type == "accumulate-loop"
 
 
 def test_req_patch_workflow_loads():
