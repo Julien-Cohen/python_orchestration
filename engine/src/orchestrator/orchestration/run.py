@@ -184,6 +184,7 @@ class Runner:
     async def run_retry_loop(self, loop:RetryUntilValidated, store:Store, fuel:int):
         """
         Run loop.body until loop.acceptanceChannel contains true (according to the store).
+        Raises an exception when out ouf fuel.
         """
 
         if isValidated(store.read(loop.acceptanceChannel)):
@@ -198,8 +199,6 @@ class Runner:
             print("Retry.")
             await self.run_step(loop.body, store)
             await self.run_retry_loop(loop, store, (fuel - 1))
-
-        # TODO : add the fuel in the config of the loop (in the yaml file)
 
 
 
