@@ -31,6 +31,8 @@ class RetryUntilValidated(BaseModel):
     body: "Step"
     acceptanceChannel: str
     fuel: int
+    anchor: str
+    """The anchor is just a name that is reported on failure, it is not used otherwise."""
 
 class AccumulateLoop(BaseModel):
     type: Literal["accumulate-loop"] = "accumulate-loop"

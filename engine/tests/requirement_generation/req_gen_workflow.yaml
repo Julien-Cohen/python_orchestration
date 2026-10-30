@@ -64,6 +64,7 @@ body:
       step1:
         type: retry-loop
         fuel : 3
+        anchor: "generate-and-check"
         body:
           type: sequence
           step1:

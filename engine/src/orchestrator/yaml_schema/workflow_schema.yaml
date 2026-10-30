@@ -33,9 +33,13 @@ $defs:
       stopChannel:
         title: Stopchannel
         type: string
+      fuel:
+        title: Fuel
+        type: integer
     required:
       - body
       - stopChannel
+      - fuel
     title: AccumulateLoop
     type: object
   AgentTaskConfig:
@@ -418,9 +422,17 @@ $defs:
       acceptanceChannel:
         title: Acceptancechannel
         type: string
+      fuel:
+        title: Fuel
+        type: integer
+      anchor:
+        title: Anchor
+        type: string
     required:
       - body
       - acceptanceChannel
+      - fuel
+      - anchor
     title: RetryUntilValidated
     type: object
   Sequence:

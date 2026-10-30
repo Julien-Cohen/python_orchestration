@@ -61,7 +61,9 @@ def join_evaluations (results:list, j:DecisionMode):
 
 
 class OutOfFuel(Exception):
-    pass
+    def __init__(self, anchor):
+        self.anchor = anchor
+
 
 
 def isValidated(param):
@@ -193,7 +195,7 @@ class Runner:
 
         elif fuel <= 0 :
             print("[ERROR] Retry loop burnt all its fuel.")
-            raise OutOfFuel()
+            raise OutOfFuel(loop.anchor)
 
         else:
             print("Retry.")

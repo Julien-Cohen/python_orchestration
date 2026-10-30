@@ -31,12 +31,14 @@ outputChannels:
 body:
   type: retry-loop
   fuel: 2
+  anchor: "generate-and-check-all"
   body:
     type : sequence
     step1:
       # generate a syntactically valid meta-model.
       type: retry-loop
       fuel: 2
+      anchor: "generate-and-check-syntax"
       body:
         type: sequence
         step1:

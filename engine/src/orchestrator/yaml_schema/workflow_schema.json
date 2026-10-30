@@ -57,11 +57,16 @@
         "stopChannel": {
           "title": "Stopchannel",
           "type": "string"
+        },
+        "fuel": {
+          "title": "Fuel",
+          "type": "integer"
         }
       },
       "required": [
         "body",
-        "stopChannel"
+        "stopChannel",
+        "fuel"
       ],
       "title": "AccumulateLoop",
       "type": "object"
@@ -614,11 +619,21 @@
         "acceptanceChannel": {
           "title": "Acceptancechannel",
           "type": "string"
+        },
+        "fuel": {
+          "title": "Fuel",
+          "type": "integer"
+        },
+        "anchor": {
+          "title": "Anchor",
+          "type": "string"
         }
       },
       "required": [
         "body",
-        "acceptanceChannel"
+        "acceptanceChannel",
+        "fuel",
+        "anchor"
       ],
       "title": "RetryUntilValidated",
       "type": "object"

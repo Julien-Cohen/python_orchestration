@@ -104,9 +104,9 @@ class OrchestrationExecutor(MosaicoAgentExecutor):
                 await updater.complete()
                 return
 
-            except OutOfFuel:
+            except OutOfFuel as e:
                 logger.error("Failed to run orchestration : a retry-loop ran out of fuel.")
-                await updater.failed(agent_msg('Failed to run orchestration : a retry-loop ran out of fuel.'))
+                await updater.failed(agent_msg('Failed to run orchestration : a retry-loop ran out of fuel: ' + e.anchor))
                 return
 
             except (BaseException) as e: # Fixme : sort kinds of failure to yield a better error message.

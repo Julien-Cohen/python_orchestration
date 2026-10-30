@@ -38,6 +38,7 @@ body:
     # Generate a review of the current requirements.
     type: retry-loop
     fuel: 2
+    anchor: "review"
     body:
       type: sequence
       step1:
