@@ -11,9 +11,10 @@ class AgentRepository:
     URL = f"{MOSAICO_REPOSITORY}/api/agents/search"
 
 
-    def request(self, text : str, nb):
+    def request(self, text : str, nb: int, role:str):
         payload = {
             "query": text,
+            "role" : role,
             "filters": {},
             "topK": nb,
             "llms": []
@@ -35,7 +36,7 @@ class AgentRepository:
         if param.override_repo:
             return [param.override_repo]
         else:
-            return self.request(param.skill, param.nbDifferentAgents)
+            return self.request(param.skill, param.nbDifferentAgents, "solution agent")
             # return [("http://127.0.0.1:9000") for i in range(param.nbDifferentAgents)]
 
     def requestEvaluationAgent(self, param: AgentTaskConfig)-> list[str]:
@@ -43,5 +44,5 @@ class AgentRepository:
         if param.override_repo:
             return [param.override_repo]
         else:
-            return self.request(param.skill, param.nbDifferentAgents)
+            return self.request(param.skill, param.nbDifferentAgents, "evaluation agent")
             # return [("http://127.0.0.1:9000") for i in range(param.nbDifferentAgents)]
