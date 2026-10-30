@@ -19,18 +19,19 @@ class AgentRepository:
             "llms": []
         }
 
+        print("[REPO][REQUEST]", str(payload))
         response = requests.post(self.URL, json=payload, timeout=60)
 
-        print("[LOG][RESPONSE CODE]", response.status_code)
+        print("[REPO][RESPONSE CODE]", response.status_code)
         json_object = response.json()
         for a in json_object:
-            print("[LOG][PROPOSED AGENT]", a)
+            print("[REPO][PROPOSED AGENT]", a)
 
         return [ extract_agent_card_url(a) for a in json_object] # Example: 'http://10.144.36.189:12000/.well-known/agent-card.json'
 
 
     def requestSolutionAgent(self, param: AgentTaskConfig)-> list[str]:
-        print("[LOG] REQUEST SOLUTION AGENT")
+        print("[REPO] REQUEST SOLUTION AGENT")
         if param.override_repo:
             return [param.override_repo]
         else:
@@ -38,7 +39,7 @@ class AgentRepository:
             # return [("http://127.0.0.1:9000") for i in range(param.nbDifferentAgents)]
 
     def requestEvaluationAgent(self, param: AgentTaskConfig)-> list[str]:
-        print("[LOG] REQUEST EVALUATION AGENT")
+        print("[REPO] REQUEST EVALUATION AGENT")
         if param.override_repo:
             return [param.override_repo]
         else:
