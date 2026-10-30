@@ -1,11 +1,11 @@
 import asyncio
-from typing import Optional
+from typing import Optional, Any
 
 import langfuse
 
 from orchestrator.orchestration.a2a_client import connect_and_send
 from orchestrator.orchestration.agent_repository import AgentRepository
-from orchestrator.workflow_datatype.agent_task import GenerationConfig, EvaluationConfig
+from orchestrator.workflow_datatype.agent_task import GenerationConfig, EvaluationConfig, AgentTaskConfig
 from orchestrator.workflow_datatype.algorithmic_task import AlgorithmicTaskConfig
 from orchestrator.orchestration.state import Store
 from orchestrator.workflow_datatype.join import SolutionJoin, DecisionMode
@@ -102,7 +102,27 @@ class Runner:
         self.metadata= metadata
 
     async def run_algorithmic_task(self, task : AlgorithmicTaskConfig, store:Store):
+        print("[FIXME] impelment Algorithmic tasks.")
         print(task.statement.log) # fixme
+
+
+    async def _build_generation_message_content(self, config: AgentTaskConfig, store: Store, task: GenerationConfig) -> list[Any]:
+        message_content = []
+        message_content.append(("prompt", config.skill))
+        for n in task.inputChannels:
+            message_content.append(("specification", store.store[n]))
+        for n in task.feedbackChannels:
+            message_content.append(("explanation", store.store[n]))
+        return message_content
+
+    async def _build_supervision_message_content(self, config: AgentTaskConfig, store: Store, task: EvaluationConfig) -> list[Any]:
+        message_content = []
+        message_content.append(("prompt", config.skill))
+        for n in task.specificationChannels:
+            message_content.append(("specification", store.store[n]))
+        for n in task.solutionChannels:
+            message_content.append(("solution", store.store[n]))
+        return message_content
 
     async def run_generation_task(self, task: GenerationConfig, store:Store):
         print("[LOG] Starting generation task.")
@@ -110,13 +130,7 @@ class Runner:
         agents = self.repo.requestSolutionAgent(config)
         consolidated_agents = _resize_list(agents, config.nbSpawns)
 
-        message_content = []
-        message_content.append(("prompt", config.skill))
-        for n in task.inputChannels:
-            message_content.append(("specification", store.store[n]))
-        for n in task.feedbackChannels:
-            message_content.append(("explanation", store.store[n]))
-
+        message_content = await self._build_generation_message_content(config, store, task)
 
         accu = [] # result accumulator
 
@@ -147,15 +161,10 @@ class Runner:
         config = task.config
         agents = self.repo.requestEvaluationAgent(config)
         consolidated_agents = _resize_list(agents, config.nbSpawns)
-        message_content = []
-        message_content.append(("prompt", config.skill))
-        for n in task.specificationChannels:
-            message_content.append(("specification",store.store[n]))
-        for n in task.solutionChannels:
-            message_content.append(("solution",store.store[n]))
+
+        message_content = await self._build_supervision_message_content(config, store, task)
 
         accu = []  # result accumulator
-
 
         obs_metadata = self.new_observability_metadata()
 
@@ -181,7 +190,6 @@ class Runner:
             print("No output produced for this evaluation task")
             raise RuntimeError("No output produced for this evaluation task")
 
-        # TODO : mock evaluation agent and unit test for evaluation task
 
     async def run_retry_loop(self, loop:RetryUntilValidated, store:Store, fuel:int):
         """

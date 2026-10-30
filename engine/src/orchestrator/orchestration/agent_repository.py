@@ -36,7 +36,8 @@ class AgentRepository:
         if param.override_repo:
             return [param.override_repo]
         else:
-            return self.request(param.skill, param.nbDifferentAgents, "solution agent")
+            nb_results = max (param.nbDifferentAgents, param.maxRetry)
+            return self.request(param.skill, nb_results, "solution agent")
             # return [("http://127.0.0.1:9000") for i in range(param.nbDifferentAgents)]
 
     def requestEvaluationAgent(self, param: AgentTaskConfig)-> list[str]:
@@ -44,5 +45,6 @@ class AgentRepository:
         if param.override_repo:
             return [param.override_repo]
         else:
-            return self.request(param.skill, param.nbDifferentAgents, "evaluation agent")
+            nb_results = max (param.nbDifferentAgents, param.maxRetry)
+            return self.request(param.skill, nb_results, "evaluation agent")
             # return [("http://127.0.0.1:9000") for i in range(param.nbDifferentAgents)]
