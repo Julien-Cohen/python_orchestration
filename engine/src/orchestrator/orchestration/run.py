@@ -102,7 +102,7 @@ class Runner:
         self.metadata= metadata
 
     async def run_algorithmic_task(self, task : AlgorithmicTaskConfig, store:Store):
-        print("[FIXME] impelment Algorithmic tasks.")
+        print("[FIXME] implement Algorithmic tasks.")
         print(task.statement.log) # fixme
 
 

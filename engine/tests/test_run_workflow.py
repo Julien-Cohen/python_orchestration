@@ -15,4 +15,4 @@ async def test_minimal_statement_workflow_runs(capsys):
 
     await Runner(None).run_workflow(workflow, ["foo"])
 
-    assert capsys.readouterr().out.strip() == "hello"
+    assert capsys.readouterr().out.strip() == "[FIXME] implement Algorithmic tasks.\nhello"
