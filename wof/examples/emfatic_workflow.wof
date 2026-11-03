@@ -1,0 +1,44 @@
+first start;
+
+then init allCorrect := false  ; // TYPER
+
+then input domainDescription : String ;
+
+then init syntaxErrors := "(no comment yet)" ;
+
+then loop action generateAndCheck with max 3 retries {
+
+    then loop action generateAndSyntacticCheck with max 3 retries {
+
+        then action generation : SolutionStep {
+            :>> skill = "Generate Emfatic metamodels from a natural language specification" ;
+            :>> prompt = "Generate a domain model in Emfatic for the given domain description.";
+            in domainDescription : String;
+            in syntaxErrors : Explanation;
+            in explanations : Explanation*;
+            out domainModel : Solution;
+        }
+
+        then action syntacticCheck : EvaluationStep {
+            :>> skill : "Check the syntax of an Emfatic metamodel".
+            in domainModel : Solution;
+            out isSyntacticallyCorrect : Evaluation;
+            out syntaxErrors : Explanation;
+        }
+    } until isSyntacticallyCorrect ;
+
+    then action semanticCheck : EvaluationStep x3 with Unanimity {
+        :>> skill : "Check that a domain model is correct with respect to a specification"
+        :>> prompt : "Check if the given domain model is semantically correct based on the given domain."
+        in domainDescription : String;
+        in domainModel : Solution;
+        out isSemanticallyCorrect : Evaluation ;
+        out explanation1 : Explanation;
+    }
+} until isSemanticallyCorrect ;
+
+then action outputToUser : ReferenceStep {
+    :>> description = "Here is the domain model you requested. I have checked its syntactic and semantic correctness.";
+    :>> agent = referenceAgent;
+    in domainModel : Solution;
+}
