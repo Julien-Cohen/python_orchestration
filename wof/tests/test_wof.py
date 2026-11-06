@@ -193,8 +193,9 @@ def test_original_example_reports_the_missing_brace():
 def test_walk_visits_nested_steps():
     wf = parse_file(str(FIXED))
     first, *rest = wf.steps
+    wf_rest = Workflow(steps=rest, loc=wf.loc)
     assert isinstance(first, StartStep)
-    assert [s.name for s in rest.walk()] == [
+    assert [s.name for s in wf_rest.walk()] == [
         "allCorrect", "domainDescription", "syntaxErrors",
         "generateAndCheck", "generateAndSyntacticCheck", "generation", "syntacticCheck",
         "semanticCheck", "outputToUser",
