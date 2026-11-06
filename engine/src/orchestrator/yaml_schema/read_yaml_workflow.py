@@ -12,6 +12,12 @@ def read_file(filename) -> Workflow:
 
     return Workflow.model_validate(raw_data)
 
+def workflow_to_yaml(workflow: Workflow) -> str:
+    return yaml.safe_dump(
+        workflow.model_dump(mode="json"),
+        sort_keys=False,
+        allow_unicode=True,
+    )
 
 def main():
     if len(sys.argv) != 2:

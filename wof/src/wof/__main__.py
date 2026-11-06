@@ -1,7 +1,8 @@
 """Command-line entry point.
 
 Usage:
-    python -m wof FILE.wof            # print the AST as JSON
+    python -m wof FILE.wof            # parse, compile, print the workflow as JSON
+    python -m wof FILE.wof --ast      # stop after parsing: print the wof AST as JSON
     python -m wof FILE.wof --tree     # print the raw Lark parse tree instead
     python -m wof FILE.wof -o out.json
 """
@@ -12,6 +13,8 @@ from pathlib import Path
 from lark import Lark
 from lark.exceptions import UnexpectedInput, VisitError
 
+from orchestrator.yaml_schema.read_yaml_workflow import workflow_to_yaml
+from .compile import Defaults, compile_workflow
 from .transformer import ToAst
 
 GRAMMAR_PATH = Path(__file__).with_name("wof.lark")
@@ -20,11 +23,13 @@ GRAMMAR_PATH = Path(__file__).with_name("wof.lark")
 def main(argv=None) -> int:
     ap = argparse.ArgumentParser(
         prog="python -m wof",
-        description="Parse a .wof workflow file and print its AST as JSON.",
+        description="Parse a .wof workflow file and compile it to a MOSAICO workflow (JSON).",
     )
     ap.add_argument("file", type=Path, help="path to the .wof file")
     ap.add_argument("--tree", action="store_true",
-                    help="print the raw Lark parse tree instead of the AST")
+                    help="print the raw Lark parse tree instead of the compiled workflow")
+    ap.add_argument("--ast", action="store_true",
+                    help="print the wof AST instead of the compiled workflow (skip compilation)")
     ap.add_argument("-o", "--output", type=Path,
                     help="write the result to this file instead of stdout")
     args = ap.parse_args(argv)
@@ -48,21 +53,31 @@ def main(argv=None) -> int:
             print(e.get_context(text), file=sys.stderr)
         return 1
 
-    # 2. Structure: parse tree -> validated Pydantic AST
     if args.tree:
         result = tree.pretty()
     else:
+        # 2. Structure: parse tree -> validated Pydantic AST
         try:
             wf = ToAst().transform(tree)
         except VisitError as e:
             print(f"{args.file}: invalid workflow: {e.orig_exc}", file=sys.stderr)
             return 1
-        result = wf.model_dump_json(indent=2)
+
+        if args.ast:
+            result = wf.model_dump_json(indent=2)
+        else:
+            # 3. Compilation: wof AST -> MOSAICO workflow
+            try:
+                compiled = compile_workflow(wf, Defaults())
+            except Exception as e:
+                print(f"{args.file}: compilation error: {e}", file=sys.stderr)
+                return 1
+            result = workflow_to_yaml(compiled)
 
     if args.output:
-        args.output.write_text(result + "\n", encoding="utf-8")
+        args.output.write_text(result.rstrip() + "\n", encoding="utf-8")
     else:
-        print(result)
+        print(result.rstrip())
     return 0
 
 
