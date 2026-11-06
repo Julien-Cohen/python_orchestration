@@ -1,0 +1,48 @@
+first start;
+
+then input initial_requirements : String* ;
+
+then loop action generateAndCheckReview with max 3 retries {
+
+    then action reviewGeneration : SolutionStep {
+        :>> skill = "Review the quality of some requirements" ;
+        :>> prompt = "Check that the given requirements are not ambiguous.";
+        in initial_requirements ;
+        out review : Solution ;
+    }
+
+    then spawn 3 action reviewCheck : EvaluationStep with Unanimity {
+        :>> skill = "Check that a comment on a list of requirement is correct." ;
+        in initial_requirements ;
+        in review ;
+        out review_evaluation : Evaluation;
+    }
+
+} until review_evaluation is accepted ;
+
+then loop action generateAndCheckPatch with max 3 retries {
+
+    then action patchGeneration : SolutionStep {
+        :>> skill = "Given a problem in a list of requirements, propose a change to fix it." ;
+        :>> prompt = "Here is a list of requirements and a problem in it. How can I fix it?";
+        in initial_requirements ;
+        in review ;
+        out patch : Solution ;
+    }
+
+    then spawn 3 action patchCheck : EvaluationStep with Majority {
+        :>> skill = "Check that a comment on a list of requirement is correct.";
+        in initial_requirements ;
+        in review ;
+        in patch ;
+        out patch_evaluation : Evaluation;
+    }
+
+} until patch_evaluation is accepted ;
+
+
+then reference action outputToUser : ReferenceStep {
+    :>> message = "Here is a problem that has been detected and a patch to fix it.";
+    send review ;
+    send patch ;
+}

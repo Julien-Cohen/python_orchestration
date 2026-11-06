@@ -1,0 +1,31 @@
+workflow: "first" "start" ";" statement*
+statement: "then" step
+?step: input_decl | init_decl | action_step | loop_step | spawn_step | reference_step
+
+input_decl: "input" NAME ":" type ";"
+init_decl: "init" NAME ":" type ":=" literal ";"
+
+action_step: "action" NAME ":" NAME body
+spawn_step: "spawn" INT "action" NAME ":" NAME "with" POLICY body
+reference_step: "reference" "action" NAME ":" NAME body
+loop_step: "loop" "action" NAME "with" "max" INT "retries" "{" statement* "}" "until" condition ";"
+
+body: "{" member* "}"
+?member: redefinition | in_decl | out_decl | send_decl
+redefinition: ":>>" NAME "=" literal ";"
+in_decl: "in" NAME ";"
+out_decl: "out" NAME ":" type ";"
+send_decl: "send" NAME ";"
+
+condition: NAME "is" VERDICT
+VERDICT: "accepted" | "rejected"
+POLICY: "Majority" | "Unanimity"
+type: NAME [MULT]
+MULT: "*"
+?literal: STRING | INT
+
+NAME: /[A-Za-z_][A-Za-z0-9_]*/
+INT: /[0-9]+/
+%import common.ESCAPED_STRING -> STRING
+%import common.WS
+%ignore WS
