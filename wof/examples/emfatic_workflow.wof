@@ -1,7 +1,5 @@
 first start;
 
-then init allCorrect := false  ; // TYPER
-
 then input domainDescription : String ;
 
 then init syntaxErrors := "(no comment yet)" ;
@@ -20,7 +18,7 @@ then loop action generateAndCheck with max 3 retries {
         }
 
         then action syntacticCheck : EvaluationStep {
-            :>> skill : "Check the syntax of an Emfatic metamodel".
+            :>> skill : "Check the syntax of an Emfatic metamodel" ;
             in domainModel : Solution;
             out isSyntacticallyCorrect : Evaluation;
             out syntaxErrors : Explanation;
@@ -28,8 +26,8 @@ then loop action generateAndCheck with max 3 retries {
     } until isSyntacticallyCorrect ;
 
     then action semanticCheck : EvaluationStep x3 with Unanimity {
-        :>> skill : "Check that a domain model is correct with respect to a specification"
-        :>> prompt : "Check if the given domain model is semantically correct based on the given domain."
+        :>> skill : "Check that a domain model is correct with respect to a specification" ;
+        :>> prompt : "Check if the given domain model is semantically correct based on the given domain." ;
         in domainDescription : String;
         in domainModel : Solution;
         out isSemanticallyCorrect : Evaluation ;

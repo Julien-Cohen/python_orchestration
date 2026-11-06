@@ -20,7 +20,7 @@ from wof import (
     tokenize,
 )
 
-EXAMPLES = Path(__file__).parent.parent / "examples"
+EXAMPLES = Path(__file__).parent / "workflows"
 FIXED = EXAMPLES / "emfatic_workflow_test.wof"
 ORIGINAL = EXAMPLES / "emfatic_workflow_original.wof"
 
@@ -179,7 +179,7 @@ def test_fixed_example_structure():
 
 def test_fixed_example_warnings_are_the_three_known_slips():
     _, warnings = parse_with_warnings(FIXED.read_text())
-    assert [w.loc.line for w in warnings] == [22, 30, 31]
+    assert [w.loc.line for w in warnings] == [23, 31, 32]
 
 
 def test_original_example_reports_the_missing_brace():
