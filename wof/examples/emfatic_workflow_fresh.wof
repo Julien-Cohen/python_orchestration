@@ -1,0 +1,42 @@
+first start;
+
+then input specification : String ;
+
+then init syntaxErrors : Explanation := "empty" ;
+then init semanticFeedback : Explanation := "empty" ;
+
+then loop action generateAndCheckAll with max 2 retries {
+
+    then loop action generateAndCheckSyntax with max 2 retries {
+
+        then action generation : SolutionStep {
+            :>> skill = "Generate Emfatic metamodels from a natural language specification" ;
+            :>> prompt = "Generate a domain model in Emfatic for the given domain description.";
+            in specification ;
+            in syntaxErrors ;
+            in semanticFeedback ;
+            out metaModel : Solution;
+        }
+
+        then action syntacticCheck : EvaluationStep {
+            :>> skill = "Check the syntax of an Emfatic metamodel" ;
+            in metaModel ;
+            out syntacticCorrectness : Evaluation;
+            out syntaxErrors : Explanation;
+        }
+    } until syntacticCorrectness is accepted ;
+
+    then spawn 2 action semanticCheck : EvaluationStep with Majority {
+        :>> skill = "Check that a domain model is correct with respect to a specification" ;
+        :>> prompt = "Check if the given domain model is semantically correct based on the given domain." ;
+        in specification ;
+        in metaModel ;
+        out semanticCorrectness : Evaluation ;
+        out semanticFeedback : Explanation;
+    }
+} until semanticCorrectness is accepted;
+
+then reference action outputToUser : ReferenceStep {
+    :>> message = "Here is the domain model you requested. I have checked its syntactic and semantic correctness.";
+    send metaModel ;
+}

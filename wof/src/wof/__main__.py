@@ -14,7 +14,8 @@ from lark import Lark
 from lark.exceptions import UnexpectedInput, VisitError
 
 from orchestrator.yaml_schema.read_yaml_workflow import workflow_to_yaml
-from .compile import Defaults, compile_workflow
+from .compile import compile_workflow
+from wof.default_values import Defaults
 from .transformer import ToAst
 
 GRAMMAR_PATH = Path(__file__).with_name("wof.lark")

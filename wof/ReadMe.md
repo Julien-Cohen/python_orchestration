@@ -5,9 +5,16 @@ Concrete Syntax for MOSAICO workflows
 
 ## Compile to the low-level orchestration language
 
-Emfatic:
+### Emfatic
+
+On stdout:
 ```bash
 python -m wof examples/emfatic_workflow.wof
+```
+
+In an output file:
+```bash
+python -m wof examples/emfatic_workflow_fresh.wof > generated_emfatic_workflow_fresh.yaml
 ```
 
 Requirement patch:

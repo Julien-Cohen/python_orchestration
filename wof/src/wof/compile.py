@@ -8,21 +8,18 @@ caller passes to `compile_workflow`.
 from __future__ import annotations
 
 import warnings
-from dataclasses import dataclass
-from typing import Callable, Optional
+from typing import Callable
 
 from . import wof_ast as wof
 from orchestrator.workflow_datatype.agent_task import (
     AgentTaskConfig,
     EvaluationConfig,
-    EvaluationKind,
     GenerationConfig,
-    OnAgentFailure,
 )
 from orchestrator.workflow_datatype.channelStructure import ChannelStructure
-from orchestrator.workflow_datatype.join import DecisionMode, SolutionJoin
+from orchestrator.workflow_datatype.join import DecisionMode
 from orchestrator.workflow_datatype.workflows import (
-    AlgorithmicStep,  # noqa: F401  (kept for future statements)
+    # noqa: F401  (kept for future statements)
     ChannelDeclaration,
     EvaluationStep,
     GenerationStep,
@@ -33,45 +30,7 @@ from orchestrator.workflow_datatype.workflows import (
     Step,
     Workflow,
 )
-
-
-# --------------------------------------------------------------------------- #
-# Defaults: everything that the wof_ast does not express
-# --------------------------------------------------------------------------- #
-@dataclass(frozen=True)
-class Defaults:
-    # --- AgentTaskConfig ---
-    skill: str = "default"
-    override_repo: Optional[str] = None
-    nb_spawns: int = 1
-    nb_different_agents: int = 1
-    nb_required_answers: Optional[int] = None  # None -> same as nbSpawns
-    agent_timeout: int = 60_000                # milliseconds
-    on_agent_failure: OnAgentFailure = OnAgentFailure.RETRY_OTHER
-    on_agent_rejection: OnAgentFailure = OnAgentFailure.RETRY_OTHER
-    max_effort: int = 100_000
-    max_retry: int = 1
-
-    # --- GenerationConfig / EvaluationConfig ---
-    solution_join: SolutionJoin = SolutionJoin.FIRST
-    consensus_type: DecisionMode = DecisionMode.MAJORITY
-    evaluation_kind: EvaluationKind = EvaluationKind.BOOLEAN
-
-    # --- channels ---
-    channel_init_value: str = ""                           # for channels created by `out`
-    atom_structure: ChannelStructure = ChannelStructure.Atom   # TypeRef.many == False
-    many_structure: ChannelStructure = ChannelStructure.List   # TypeRef.many == True
-
-    # --- which `step_type` names are evaluations (all others are generations) ---
-    evaluation_step_types: frozenset[str] = frozenset({"EvaluationStep"})
-
-    # --- `:>> name = value` redefinitions that have no counterpart in the target
-    #     datatypes (the target has no field for prompts or messages): dropped silently.
-    ignored_redefinitions: frozenset[str] = frozenset({"prompt", "message"})
-
-    # --- an `in` of a channel whose declared type has this name is a *feedback*
-    #     channel of a generation (not one of its regular inputs).
-    explanation_type_name: str = "Explanation"
+from .default_values import Defaults
 
 
 # --------------------------------------------------------------------------- #

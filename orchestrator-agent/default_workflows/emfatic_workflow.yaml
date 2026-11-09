@@ -12,7 +12,7 @@ internalChannels:
     structure: Atom
     init_with_value : "false"
   - type: channel-declaration
-    name: syntactic-errors
+    name: syntax-errors
     structure: Atom
     init_with_value: "empty"
   - type: channel-declaration
@@ -50,7 +50,7 @@ body:
             type: generation-step
             task:
               config:
-                skill: Generate Emfatic metamodels from natural language specification.
+                skill: Generate Emfatic metamodels from natural a language specification.
                 #override_repo: "http://emfatic-generator-smolagents:9000"
                 nbSpawns: 1
                 nbDifferentAgents: 1
@@ -64,7 +64,7 @@ body:
               inputChannels:
                 - specification
               feedbackChannels:
-                - syntactic-errors
+                - syntax-errors
                 - semantic-feedback
               outputChannels:
                 - meta-model
@@ -80,7 +80,7 @@ body:
                 nbDifferentAgents: 1
                 nbRequiredAnswers: 1
                 agentTimeout: 60
-                onAgentFailure: RetryOther
+                onAgentFailure: RetrySame
                 onAgentRejection: NoRetry
                 maxEffort: 500
                 maxRetry: 1
@@ -90,7 +90,7 @@ body:
               solutionChannels:
               - meta-model
               evaluationChannel: syntactic-correctness
-              explanationChannel: syntactic-errors
+              explanationChannel: syntax-errors
         acceptanceChannel: syntactic-correctness
       step2:
         # semantic validation

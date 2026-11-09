@@ -21,7 +21,8 @@ from lark.exceptions import UnexpectedInput, VisitError
 
 from wof import wof_ast as wof
 from wof.__main__ import GRAMMAR_PATH, main
-from wof.compile import CompilationWarning, Defaults, _sequence, compile_workflow
+from wof.compile import CompilationWarning, _sequence, compile_workflow
+from wof.default_values import Defaults
 from wof.transformer import ToAst
 
 from orchestrator.workflow_datatype.agent_task import EvaluationKind, OnAgentFailure
