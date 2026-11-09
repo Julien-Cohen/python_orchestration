@@ -19,8 +19,9 @@ python -m wof examples/emfatic_workflow_fresh.wof > generated_emfatic_workflow_f
 
 ### Requirement patch
 
+In an output file:
 ```bash
-python -m wof examples/requirement_patcher_workflow.wof
+python -m wof examples/requirement_patcher_workflow.wof > generated_requirement_patcher_workflow.yaml
 ```
 
 ## Show intermediate steps
@@ -44,7 +45,6 @@ python -m wof examples/emfatic_workflow.wof -o out.json
 
 # Tests
 
-(FIXME)
 ```bash
 uv sync --extra test
 uv run pytest -v

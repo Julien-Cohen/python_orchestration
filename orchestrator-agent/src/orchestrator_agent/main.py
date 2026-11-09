@@ -16,6 +16,7 @@ def main():
         sys.exit(1)
     else:
         filename = sys.argv[1]
+        print("[LOG] Using file:", filename)
 
         logging.basicConfig(level=logging.INFO)
         load_dotenv()

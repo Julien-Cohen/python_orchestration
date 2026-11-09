@@ -1,0 +1,142 @@
+type: workflow
+inputChannels:
+- type: input-channel-declaration
+  name: initial_requirements
+  structure: List
+  init_with_part: initial_requirements
+internalChannels:
+- type: channel-declaration
+  name: review_evaluation
+  structure: Atom
+  init_with_value: ''
+- type: channel-declaration
+  name: reviewCheck_explanation
+  structure: Atom
+  init_with_value: ''
+- type: channel-declaration
+  name: patch_evaluation
+  structure: Atom
+  init_with_value: ''
+- type: channel-declaration
+  name: patchCheck_explanation
+  structure: Atom
+  init_with_value: ''
+outputChannels:
+- type: channel-declaration
+  name: review
+  structure: Atom
+  init_with_value: ''
+- type: channel-declaration
+  name: patch
+  structure: Atom
+  init_with_value: ''
+body:
+  type: sequence
+  step1:
+    type: retry-loop
+    body:
+      type: sequence
+      step1:
+        type: generation-step
+        task:
+          config:
+            skill: Review the quality of some requirements
+            override_repo: http://review-generator:9000
+            nbSpawns: 1
+            nbDifferentAgents: 1
+            nbRequiredAnswers: 1
+            agentTimeout: 60
+            onAgentFailure: RetrySame
+            onAgentRejection: NoRetry
+            maxEffort: 500
+            maxRetry: 1
+          solutionJoin: First
+          inputChannels:
+          - initial_requirements
+          feedbackChannels: []
+          outputChannels:
+          - review
+      step2:
+        type: evaluation-step
+        task:
+          config:
+            skill: Check that a comment on a list of requirement is correct.
+            override_repo: http://emfatic-semantic-supervisor:9000
+            nbSpawns: 3
+            nbDifferentAgents: 1
+            nbRequiredAnswers: 3
+            agentTimeout: 60
+            onAgentFailure: RetrySame
+            onAgentRejection: NoRetry
+            maxEffort: 500
+            maxRetry: 1
+          consensusType: Unanimity
+          outputKind: Boolean
+          specificationChannels:
+          - initial_requirements
+          solutionChannels:
+          - review
+          evaluationChannel: review_evaluation
+          explanationChannel: reviewCheck_explanation
+    acceptanceChannel: review_evaluation
+    fuel: 3
+    anchor: generateAndCheckReview
+  step2:
+    type: sequence
+    step1:
+      type: retry-loop
+      body:
+        type: sequence
+        step1:
+          type: generation-step
+          task:
+            config:
+              skill: Given a problem in a list of requirements, propose a change to
+                fix it.
+              override_repo: http://patch-generator:9000
+              nbSpawns: 1
+              nbDifferentAgents: 1
+              nbRequiredAnswers: 1
+              agentTimeout: 60
+              onAgentFailure: RetrySame
+              onAgentRejection: NoRetry
+              maxEffort: 500
+              maxRetry: 1
+            solutionJoin: First
+            inputChannels:
+            - initial_requirements
+            - review
+            feedbackChannels: []
+            outputChannels:
+            - patch
+        step2:
+          type: evaluation-step
+          task:
+            config:
+              skill: Check that a patch on a list of requirement is relevant.
+              override_repo: http://emfatic-semantic-supervisor:9000
+              nbSpawns: 3
+              nbDifferentAgents: 1
+              nbRequiredAnswers: 3
+              agentTimeout: 60
+              onAgentFailure: RetrySame
+              onAgentRejection: NoRetry
+              maxEffort: 500
+              maxRetry: 1
+            consensusType: Majority
+            outputKind: Boolean
+            specificationChannels:
+            - initial_requirements
+            solutionChannels:
+            - review
+            - patch
+            evaluationChannel: patch_evaluation
+            explanationChannel: patchCheck_explanation
+      acceptanceChannel: patch_evaluation
+      fuel: 3
+      anchor: generateAndCheckPatch
+    step2:
+      type: reply-step
+      outputChannels:
+      - review
+      - patch

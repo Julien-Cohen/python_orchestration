@@ -7,12 +7,14 @@ then loop action generateAndCheckReview with max 3 retries {
     then action reviewGeneration : SolutionStep {
         :>> skill = "Review the quality of some requirements" ;
         :>> prompt = "Check that the given requirements are not ambiguous.";
+        :>> override_repo = "http://review-generator:9000" ;
         in initial_requirements ;
         out review : Solution ;
     }
 
     then spawn 3 action reviewCheck : EvaluationStep with Unanimity {
-        :>> skill = "Check that a comment on a list of requirement is correct." ;
+        :>> skill = "Check that a comment on a list of requirement is correct."  ;
+        :>> override_repo = "http://emfatic-semantic-supervisor:9000" ;
         in initial_requirements ;
         in review ;
         out review_evaluation : Evaluation;
@@ -25,13 +27,15 @@ then loop action generateAndCheckPatch with max 3 retries {
     then action patchGeneration : SolutionStep {
         :>> skill = "Given a problem in a list of requirements, propose a change to fix it." ;
         :>> prompt = "Here is a list of requirements and a problem in it. How can I fix it?";
+        :>> override_repo = "http://patch-generator:9000" ;
         in initial_requirements ;
         in review ;
         out patch : Solution ;
     }
 
     then spawn 3 action patchCheck : EvaluationStep with Majority {
-        :>> skill = "Check that a comment on a list of requirement is correct.";
+        :>> skill = "Check that a patch on a list of requirement is relevant.";
+        :>> override_repo = "http://emfatic-semantic-supervisor:9000" ;
         in initial_requirements ;
         in review ;
         in patch ;
