@@ -1,0 +1,113 @@
+type: workflow
+inputChannels:
+- type: input-channel-declaration
+  name: specification
+  structure: Atom
+  init_with_part: specification
+internalChannels:
+- type: channel-declaration
+  name: syntaxErrors
+  structure: Atom
+  init_with_value: empty
+- type: channel-declaration
+  name: semanticFeedback
+  structure: Atom
+  init_with_value: empty
+- type: channel-declaration
+  name: syntacticCorrectness
+  structure: Atom
+  init_with_value: ''
+- type: channel-declaration
+  name: semanticCorrectness
+  structure: Atom
+  init_with_value: ''
+outputChannels:
+- type: channel-declaration
+  name: metaModel
+  structure: Atom
+  init_with_value: ''
+body:
+  type: sequence
+  step1:
+    type: retry-loop
+    body:
+      type: sequence
+      step1:
+        type: retry-loop
+        body:
+          type: sequence
+          step1:
+            type: generation-step
+            task:
+              config:
+                skill: Generate Emfatic metamodels from a natural language specification
+                override_repo: http://emfatic-generator-smolagents:9000
+                nbSpawns: 1
+                nbDifferentAgents: 1
+                nbRequiredAnswers: 1
+                agentTimeout: 60
+                onAgentFailure: RetrySame
+                onAgentRejection: NoRetry
+                maxEffort: 500
+                maxRetry: 1
+              solutionJoin: First
+              inputChannels:
+              - specification
+              feedbackChannels:
+              - syntaxErrors
+              - semanticFeedback
+              outputChannels:
+              - metaModel
+          step2:
+            type: evaluation-step
+            task:
+              config:
+                skill: Check the syntax of an Emfatic metamodel
+                override_repo: http://emfatic-syntactic-supervisor:9000
+                nbSpawns: 1
+                nbDifferentAgents: 1
+                nbRequiredAnswers: 1
+                agentTimeout: 60
+                onAgentFailure: RetrySame
+                onAgentRejection: NoRetry
+                maxEffort: 500
+                maxRetry: 1
+              consensusType: Majority
+              outputKind: Boolean
+              specificationChannels: []
+              solutionChannels:
+              - metaModel
+              evaluationChannel: syntacticCorrectness
+              explanationChannel: syntaxErrors
+        acceptanceChannel: syntacticCorrectness
+        fuel: 2
+        anchor: generateAndCheckSyntax
+      step2:
+        type: evaluation-step
+        task:
+          config:
+            skill: Check that a domain model is correct with respect to a specification
+            override_repo: http://emfatic-semantic-supervisor:9000
+            nbSpawns: 2
+            nbDifferentAgents: 1
+            nbRequiredAnswers: 2
+            agentTimeout: 60
+            onAgentFailure: RetrySame
+            onAgentRejection: NoRetry
+            maxEffort: 500
+            maxRetry: 1
+          consensusType: Majority
+          outputKind: Boolean
+          specificationChannels:
+          - specification
+          solutionChannels:
+          - metaModel
+          evaluationChannel: semanticCorrectness
+          explanationChannel: semanticFeedback
+    acceptanceChannel: semanticCorrectness
+    fuel: 2
+    anchor: generateAndCheckAll
+  step2:
+    type: reply-step
+    outputChannels:
+    - metaModel

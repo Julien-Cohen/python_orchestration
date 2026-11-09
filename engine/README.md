@@ -35,6 +35,9 @@ Or:
     python -m orchestrator.yaml_schema.read_yaml_workflow tests/emfatic/emfatic_workflow.yaml 
 ```
 
+```bash
+    python -m orchestrator.yaml_schema.read_yaml_workflow tests/emfatic/generated_emfatic_workflow_fresh.yaml 
+```
 
 ## Requirement generation example
 
@@ -51,12 +54,6 @@ Or:
 
 
 # Unit tests
-```bash
-python -m pip install -e ".[test]"
-python -m pytest -v
-```
-
-Or:
 
 ```bash
 uv sync --extra test

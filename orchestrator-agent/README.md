@@ -66,6 +66,10 @@ Build Mosaico demonstrator Emfatic orchestrator image:
   docker build -f src/orchestrator_agent/docker/Dockerfile.mosaico-demonstrator-emfatic-orchestration -t emfatic-orchestrator-agent:latest ..
 ```
 
+```bash
+  docker build -f src/orchestrator_agent/docker/Dockerfile.generated_emfatic -t generated-emfatic-orchestrator-agent:latest ..
+```
+
 ## Run the agent image in a container
 
 ```bash 
