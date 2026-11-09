@@ -17,7 +17,8 @@ In an output file:
 python -m wof examples/emfatic_workflow_fresh.wof > generated_emfatic_workflow_fresh.yaml
 ```
 
-Requirement patch:
+### Requirement patch
+
 ```bash
 python -m wof examples/requirement_patcher_workflow.wof
 ```

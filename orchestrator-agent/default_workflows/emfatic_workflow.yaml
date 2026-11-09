@@ -51,7 +51,7 @@ body:
             task:
               config:
                 skill: Generate Emfatic metamodels from natural a language specification.
-                #override_repo: "http://emfatic-generator-smolagents:9000"
+                override_repo: "http://emfatic-generator-smolagents:9000"
                 nbSpawns: 1
                 nbDifferentAgents: 1
                 nbRequiredAnswers: 1
@@ -75,7 +75,7 @@ body:
             task:
               config:
                 skill: Check syntactically an Emfatic metamodel.
-                #override_repo: "http://emfatic-syntactic-supervisor:9000"
+                override_repo: "http://emfatic-syntactic-supervisor:9000"
                 nbSpawns: 1
                 nbDifferentAgents: 1
                 nbRequiredAnswers: 1
