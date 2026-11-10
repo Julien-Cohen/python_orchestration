@@ -1,7 +1,7 @@
-A datatype to specify MOSAICO workflows.
+A datatype to specify MOSAICO workflows together with an engine to run them.
 
 
-# Install the code
+# Install the code 
 
 ```bash
   pip install -e .
@@ -13,7 +13,11 @@ Or:
 
 # Generate the YAML schema
 
-## Prerequisites: Install the "yq" command
+The YAML schema is generated from the Pydantic AST datatype.
+
+## Prerequisites
+
+Install the "yq" command.
 
 ```
     sudo snap install yq
@@ -59,3 +63,50 @@ Or:
 uv sync --extra test
 uv run pytest -v
 ```
+
+
+# Compiler WOF -> YAML
+
+The orchestration engine reads YAML files in its own format. We provide a higher level language with a SysML-like syntax called WOF. A compiler is provided to transform high-level WOF workflow into low-level YAML orchestrations.
+
+Concrete Syntax for MOSAICO workflows
+
+
+## Run the compiler
+
+### Compile to the low-level orchestration language
+
+#### Emfatic
+
+On stdout:
+```bash
+python -m wof wof_examples/emfatic_workflow.wof
+```
+
+In an output file:
+```bash
+python -m wof wof_examples/emfatic_workflow_fresh.wof > generated_emfatic_workflow_fresh.yaml
+```
+
+#### Requirement patch
+
+In an output file:
+```bash
+python -m wof wof_examples/requirement_patcher_workflow.wof > generated_requirement_patcher_workflow.yaml
+```
+
+### Show intermediate steps
+
+Show the parsed AST (WOF language):
+```bash
+python -m wof wof_examples/emfatic_workflow.wof --ast
+```
+
+Show the parsed raw tree (Lark):
+```bash
+python -m wof wof_examples/emfatic_workflow.wof --tree
+```
+
+
+
+

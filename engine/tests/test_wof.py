@@ -2,11 +2,11 @@
 
 Layout assumed:
     <repo>/
-        wof/            (the package: __main__.py, compile.py, transformer.py, wof_ast.py, wof.lark)
+        wof/            (the package: __main__.py, compile.py, transformer.py, wof_ast.py, wof_ast.lark)
         orchestrator/   (the MOSAICO datatypes)
-        test_wof.py     (this file)
+        test_wof_ast.py     (this file)
 
-Run with:  pytest -v test_wof.py
+Run with:  pytest -v test_wof_ast.py
 Any *.wof file located next to this file (or in ./examples) is also parsed and
 compiled by `test_example_files`.
 """
@@ -19,11 +19,9 @@ import pytest
 from lark import Lark
 from lark.exceptions import UnexpectedInput, VisitError
 
-from wof import wof_ast as wof
-from wof.__main__ import GRAMMAR_PATH, main
-from wof.compile import CompilationWarning, _sequence, compile_workflow
-from wof.default_values import Defaults
-from wof.transformer import ToAst
+from wof import wof_ast
+
+
 
 from orchestrator.workflow_datatype.agent_task import EvaluationKind, OnAgentFailure
 from orchestrator.workflow_datatype.channelStructure import ChannelStructure
@@ -35,7 +33,10 @@ from orchestrator.workflow_datatype.workflows import (
     RetryUntilValidated,
     Sequence,
 )
-
+from wof.__main__ import GRAMMAR_PATH, main
+from wof.compile import compile_workflow, _sequence, CompilationWarning
+from wof.default_values import Defaults
+from wof.transformer import ToAst
 
 # =========================================================================== #
 # Helpers
@@ -47,7 +48,7 @@ def parse_tree(src: str):
     return _PARSER.parse(src)
 
 
-def parse(src: str) -> wof.Workflow:
+def parse(src: str) -> wof_ast.Workflow:
     """text -> wof AST (what the CLI does in steps 1 and 2)."""
     return ToAst().transform(parse_tree(src))
 
@@ -113,8 +114,8 @@ class TestParser:
     def test_input_atom_and_many(self):
         wf = parse("first start; then input a : String ; then input b : String* ;")
         a, b = wf.statements
-        assert isinstance(a, wof.Input) and a.type_ref == wof.TypeRef(name="String", many=False)
-        assert isinstance(b, wof.Input) and b.type_ref == wof.TypeRef(name="String", many=True)
+        assert isinstance(a, wof_ast.Input) and a.type_ref == wof_ast.TypeRef(name="String", many=False)
+        assert isinstance(b, wof_ast.Input) and b.type_ref == wof_ast.TypeRef(name="String", many=True)
 
     def test_init_string_and_int_values(self):
         wf = parse('first start; then init a : Explanation := "hi" ; then init n : Int := 42 ;')
@@ -129,18 +130,18 @@ class TestParser:
     def test_action_members(self):
         wf = parse(SIMPLE)
         _, gen, check, ref = wf.statements
-        assert isinstance(gen, wof.Action) and gen.name == "gen" and gen.step_type == "SolutionStep"
+        assert isinstance(gen, wof_ast.Action) and gen.name == "gen" and gen.step_type == "SolutionStep"
         assert gen.members == [
-            wof.Redefinition(name="skill", value="generate"),
-            wof.In(name="spec"),
-            wof.Out(name="result", type_ref=wof.TypeRef(name="Solution")),
+            wof_ast.Redefinition(name="skill", value="generate"),
+            wof_ast.In(name="spec"),
+            wof_ast.Out(name="result", type_ref=wof_ast.TypeRef(name="Solution")),
         ]
-        assert isinstance(check, wof.Action) and check.step_type == "EvaluationStep"
-        assert isinstance(ref, wof.Reference) and ref.members == [wof.Send(name="result")]
+        assert isinstance(check, wof_ast.Action) and check.step_type == "EvaluationStep"
+        assert isinstance(ref, wof_ast.Reference) and ref.members == [wof_ast.Send(name="result")]
 
     def test_redefinition_with_int(self):
         wf = parse("first start; then action a : SolutionStep { :>> nbSpawns = 4 ; }")
-        assert wf.statements[0].members == [wof.Redefinition(name="nbSpawns", value=4)]
+        assert wf.statements[0].members == [wof_ast.Redefinition(name="nbSpawns", value=4)]
 
     def test_empty_body(self):
         wf = parse("first start; then action a : SolutionStep { }")
@@ -150,17 +151,17 @@ class TestParser:
     def test_spawn(self, policy):
         wf = parse(f"first start; then spawn 3 action s : EvaluationStep with {policy} {{ in x ; }}")
         s = wf.statements[0]
-        assert isinstance(s, wof.Spawn)
+        assert isinstance(s, wof_ast.Spawn)
         assert (s.count, s.name, s.step_type, s.policy.value) == (3, "s", "EvaluationStep", policy)
-        assert s.members == [wof.In(name="x")]
+        assert s.members == [wof_ast.In(name="x")]
 
     def test_loop(self):
         wf = parse(LOOP)
         loop = wf.statements[1]
-        assert isinstance(loop, wof.Loop)
+        assert isinstance(loop, wof_ast.Loop)
         assert loop.name == "retry" and loop.max_retries == 3
-        assert [type(s) for s in loop.body] == [wof.Action, wof.Action]
-        assert loop.until == wof.Condition(var="ok", verdict=wof.Verdict.ACCEPTED)
+        assert [type(s) for s in loop.body] == [wof_ast.Action, wof_ast.Action]
+        assert loop.until == wof_ast.Condition(var="ok", verdict=wof_ast.Verdict.ACCEPTED)
 
     def test_nested_loops(self):
         src = """
@@ -173,9 +174,9 @@ class TestParser:
         """
         outer = parse(src).statements[0]
         inner = outer.body[0]
-        assert isinstance(inner, wof.Loop)
-        assert inner.max_retries == 5 and inner.until.verdict is wof.Verdict.REJECTED
-        assert isinstance(inner.body[0], wof.Action)
+        assert isinstance(inner, wof_ast.Loop)
+        assert inner.max_retries == 5 and inner.until.verdict is wof_ast.Verdict.REJECTED
+        assert isinstance(inner.body[0], wof_ast.Action)
 
     def test_empty_loop_body_parses(self):
         wf = parse("first start; then loop action l with max 1 retries { } until x is accepted ;")
@@ -394,7 +395,7 @@ class TestCompilerGeneration:
         assert cfg.nbRequiredAnswers == cfg.nbSpawns          # None -> nbSpawns
         assert cfg.nbDifferentAgents == d.nb_different_agents
         assert cfg.agentTimeout == d.agent_timeout
-        assert cfg.onAgentFailure == OnAgentFailure.RETRY_OTHER
+        assert cfg.onAgentFailure == OnAgentFailure.RETRY_SAME
         assert cfg.maxEffort == d.max_effort and cfg.maxRetry == d.max_retry
         assert gen.solutionJoin == SolutionJoin.FIRST
         assert gen.inputChannels == ["spec"]

@@ -63,23 +63,43 @@ Build simple test orchestrator image:
 
 ## Emfatic use case
 
+
+
 Build Mosaico demonstrator Emfatic orchestrator image:
 ```bash
   docker build -f src/orchestrator_agent/docker/Dockerfile.mosaico-demonstrator-emfatic-orchestration -t emfatic-orchestrator-agent:latest ..
 ```
 
+### Import a workflow
+If you want to use the workflow generated from a WOF file, copy it here. For instance:
+
+```bash
+cp ../engine/generated_emfatic_workflow_fresh.yaml default_workflows/
+```
+
+Then build the Docker image:
 ```bash
   docker build -f src/orchestrator_agent/docker/Dockerfile.generated_emfatic -t generated-emfatic-orchestrator-agent:latest ..
 ```
 
 
+
+
 ## Requirement patcher use case
 
-Build Mosaico demonstrator review orchestrator image:
+### Import a workflow
+If you want to use the workflow generated from a WOF file, copy it here. For instance:
+
+```bash
+cp ../engine/generated_requirement_patcher_workflow.yaml default_workflows/
+```
+
+### Build Mosaico demonstrator review orchestrator image
 
 ```bash
   docker build -f src/orchestrator_agent/docker/Dockerfile.generated_requirement_patcher -t generated-requirement-patcher-orchestrator-agent:latest ..
 ```
+
 
 
 ## Run the agent image in a container

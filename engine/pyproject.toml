@@ -10,6 +10,7 @@ dependencies = [
     "uvicorn",
     "fastapi",
     "mosaico-base-agent>=0.3.2",
+    "lark",
 ]
 
 [build-system]

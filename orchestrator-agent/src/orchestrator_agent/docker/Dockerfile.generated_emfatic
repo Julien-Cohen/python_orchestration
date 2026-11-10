@@ -18,7 +18,7 @@ COPY engine/pyproject.toml /engine/pyproject.toml
 COPY engine/src/ /engine/src/
 
 RUN pip install --no-cache-dir uv \
- && uv sync --locked --no-dev
+ && uv sync --no-dev
 
 COPY orchestrator-agent/src/orchestrator_agent/docker/entrypoint.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh
