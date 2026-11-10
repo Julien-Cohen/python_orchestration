@@ -2,6 +2,7 @@
 name = "mosaico-orchestrator"
 version = "2.0.1"
 requires-python = ">=3.12"
+description = "Orchestrator agent"
 dependencies = [
     "pydantic>=2",
     "PyYAML",
@@ -11,6 +12,7 @@ dependencies = [
     "fastapi",
     "mosaico-base-agent>=0.3.2",
     "lark",
+    "dotenv>=0.9.9",
 ]
 
 [build-system]
@@ -22,6 +24,9 @@ where = ["src"]
 
 [project.optional-dependencies]
 test = ["pytest", "pytest-asyncio"]
+
+[project.scripts]
+orchestrator-agent = "orchestrator_agent.main:main"
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

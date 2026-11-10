@@ -11,19 +11,17 @@ RUN apt-get update \
  && apt-get install -y --no-install-recommends build-essential gcc libffi-dev curl \
  && rm -rf /var/lib/apt/lists/*
 
-COPY orchestrator-agent/pyproject.toml orchestrator-agent/uv.lock orchestrator-agent/README.md ./
-COPY orchestrator-agent/src/ ./src/
-COPY orchestrator-agent/default_workflows/ ./default_workflows/
-COPY engine/pyproject.toml /engine/pyproject.toml
-COPY engine/src/ /engine/src/
+COPY engine/default_workflows/ ./default_workflows/
+COPY engine/pyproject.toml ./pyproject.toml
+COPY engine/src/ ./src/
 
 RUN pip install --no-cache-dir uv \
- && uv sync  --no-dev
+ && uv sync --no-dev
 
-COPY orchestrator-agent/src/orchestrator_agent/docker/entrypoint.sh /entrypoint.sh
+COPY engine/src/orchestrator_agent/docker/entrypoint.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh
 
 EXPOSE 9000
 
 ENTRYPOINT ["/entrypoint.sh"]
-CMD ["uv", "run", "orchestrator-agent", "default_workflows/emfatic_workflow.yaml"]
+CMD ["uv", "run", "orchestrator-agent", "default_workflows/generated_requirement_patcher_workflow.yaml"]
